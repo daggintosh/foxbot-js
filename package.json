@@ -13,6 +13,7 @@
   "author": "Daggintosh",
   "license": "MIT",
   "dependencies": {
-    "discord.js": "^11.5.1"
+    "discord.js": "^11.5.1",
+    "randomcolor": "^0.5.4"
   }
 }
