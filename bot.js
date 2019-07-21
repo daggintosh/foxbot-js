@@ -21,21 +21,26 @@ client.login(token)
 
 client.on('ready', () => {
     console.log('Ready!')
+    client.user.setActivity('Foxes Fight', { type: 'WATCHING' })
 })
 
 client.on('message', msg => {
     switch(msg.content)
     {
+        //#region /about
         case "/about":
             var aboutEmbed = new Discord.RichEmbed()
             .setColor(randomcolour())
-            .setThumbnail("https://dagg.xyz/randomfox/images/" + Math.floor(Math.random() * 126) + ".jpg")
+            .setThumbnail("https://dagg.xyz/randomfox/images/" + Math.floor(Math.random() * 125) + ".jpg")
             .setTitle("GitHub")
             .setURL("https://github.com/daggintosh/foxbot-js")
             .setDescription("**Hello!**")
             .setAuthor("FoxBot", "https://cdn.discordapp.com/avatars/601967284394917900/f25955e890f89f1015762647f82ea555.webp")
             msg.channel.send(aboutEmbed)
             break;
+        //#endregion
+
+        //#region /fox
         case "/fox":
             fox()
             function fox()
@@ -44,7 +49,7 @@ client.on('message', msg => {
             .setColor(randomcolour())
             .setTitle(foxPhrases[Math.floor(Math.random()*foxPhrases.length)])
             .setAuthor(msg.author.username, msg.author.avatarURL)
-            .setImage("https://dagg.xyz/randomfox/images/" + Math.floor(Math.random() * 126) + ".jpg")
+            .setImage("https://dagg.xyz/randomfox/images/" + Math.floor(Math.random() * 125) + ".jpg")
             let filterplay = (reaction, user) => reaction.emoji.name === "➡" && user.id === msg.author.id
             let filterstop = (reaction, user) => reaction.emoji.name === "⏹" && user.id === msg.author.id
             msg.channel.send(foxEmbed)
@@ -65,6 +70,7 @@ client.on('message', msg => {
             })     
             }
             break
+        //#endregion
     }
 })
 
