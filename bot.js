@@ -2,7 +2,9 @@ const Discord = require('discord.js')
 const client = new Discord.Client()
 const randomcolour = require('randomcolor')
 
+//#region Bot Token
 var token = "EDIT.TOKEN"
+//#endregion
 
 const foxPhrases = [
     "A fox appears!", 
@@ -21,7 +23,7 @@ client.login(token)
 
 client.on('ready', () => {
     console.log('Ready!')
-    client.user.setActivity('Foxes Fight', { type: 'WATCHING' })
+    client.user.setActivity("Foxes in " + client.guilds.size + " Guilds", { type: 'LISTENING' })
 })
 
 client.on('message', msg => {
@@ -42,33 +44,47 @@ client.on('message', msg => {
 
         //#region /fox
         case "/fox":
+            if (msg.guild.me.hasPermission("MANAGE_MESSAGES"))
+            {
+                msg.delete()
+            }
             fox()
             function fox()
             {
-            var foxEmbed = new Discord.RichEmbed()
-            .setColor(randomcolour())
-            .setTitle(foxPhrases[Math.floor(Math.random()*foxPhrases.length)])
-            .setAuthor(msg.author.username, msg.author.avatarURL)
-            .setImage("https://dagg.xyz/randomfox/images/" + Math.floor(Math.random() * 125) + ".jpg")
-            let filterplay = (reaction, user) => reaction.emoji.name === "➡" && user.id === msg.author.id
-            let filterstop = (reaction, user) => reaction.emoji.name === "⏹" && user.id === msg.author.id
-            msg.channel.send(foxEmbed)
-            .then(function(msg){
-                let collectorplay = msg.createReactionCollector(filterplay, { time: 60000 })
-                let collectorstop = msg.createReactionCollector(filterstop, { time: 60000 })
-                collectorplay.on('collect', z => {
-                    msg.delete();
-                    fox();
-                })
-                collectorstop.on('collect', z => {
-                    msg.delete();
-                })
-                msg.react("➡")
-                .then(z =>{
-                    msg.react("⏹")
-                })
-            })     
+                var foxEmbed = new Discord.RichEmbed()
+                .setColor(randomcolour())
+                .setTitle(foxPhrases[Math.floor(Math.random()*foxPhrases.length)])
+                .setAuthor(msg.author.username, msg.author.avatarURL)
+                .setImage("https://dagg.xyz/randomfox/images/" + Math.floor(Math.random() * 125) + ".jpg")
+                let filterplay = (reaction, user) => reaction.emoji.name === "➡" && user.id === msg.author.id
+                let filterstop = (reaction, user) => reaction.emoji.name === "⏹" && user.id === msg.author.id
+                msg.channel.send(foxEmbed)
+                .then(function(msg){
+                    let collectorplay = msg.createReactionCollector(filterplay, { time: 60000 })
+                    let collectorstop = msg.createReactionCollector(filterstop, { time: 60000 })
+                    collectorplay.on('collect', z => {
+                        msg.delete();
+                        fox();
+                    })
+                    collectorstop.on('collect', z => {
+                        msg.delete();
+                    })
+                    msg.react("➡")
+                    .then(z =>{
+                        msg.react("⏹")
+                    })
+                })     
             }
+            break
+        //#endregion
+        
+        //#region /time
+        case "/time":
+            var timeEmbed = new Discord.RichEmbed()
+            .setColor(randomcolour())
+            .setDescription("**It's time to go to bed, you dolt.**")
+            .setAuthor(msg.author.username, msg.author.avatarURL)
+            msg.channel.send(timeEmbed)
             break
         //#endregion
     }
