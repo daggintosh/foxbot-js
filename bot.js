@@ -38,16 +38,13 @@ client.on('message', msg => {
             .setURL("https://github.com/daggintosh/foxbot-js")
             .setDescription("**Hello!**")
             .setAuthor("FoxBot", "https://cdn.discordapp.com/avatars/601967284394917900/f25955e890f89f1015762647f82ea555.webp")
+            .setFooter(Date())
             msg.channel.send(aboutEmbed)
             break;
         //#endregion
 
         //#region /fox
         case "/fox":
-            if (msg.guild.me.hasPermission("MANAGE_MESSAGES"))
-            {
-                msg.delete()
-            }
             fox()
             function fox()
             {
@@ -56,6 +53,7 @@ client.on('message', msg => {
                 .setTitle(foxPhrases[Math.floor(Math.random()*foxPhrases.length)])
                 .setAuthor(msg.author.username, msg.author.avatarURL)
                 .setImage("https://dagg.xyz/randomfox/images/" + Math.floor(Math.random() * 125) + ".jpg")
+                .setFooter(Date())
                 let filterplay = (reaction, user) => reaction.emoji.name === "➡" && user.id === msg.author.id
                 let filterstop = (reaction, user) => reaction.emoji.name === "⏹" && user.id === msg.author.id
                 msg.channel.send(foxEmbed)
@@ -83,8 +81,35 @@ client.on('message', msg => {
             var timeEmbed = new Discord.RichEmbed()
             .setColor(randomcolour())
             .setDescription("**It's time to go to bed, you dolt.**")
+            .setFooter(Date())
             .setAuthor(msg.author.username, msg.author.avatarURL)
             msg.channel.send(timeEmbed)
+            break
+        //#endregion
+
+        //#region /ping
+        case "/ping":
+            var pingMil = client.ping
+            var pingColour = 0
+            if(pingMil >= 200)
+            {
+                pingColour = "ff0000"
+            }
+            else if(pingMil >= 150)
+            {
+                pingColour = "f6ff00"
+            }
+            else if(pingMil < 150)
+            {
+                pingColour = "00ffe5"
+            }
+            var pingEmbed = new Discord.RichEmbed()
+            .setColor(pingColour)
+            .setDescription("Pong!")
+            .addField("Ping from here to the server:", pingMil)
+            .setFooter(Date())
+            .setAuthor(msg.author.username, msg.author.avatarURL)
+            msg.channel.send(pingEmbed)
             break
         //#endregion
     }
