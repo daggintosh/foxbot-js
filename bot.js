@@ -6,7 +6,7 @@ const request = require('request');
 const embed = new Discord.RichEmbed()
 
 //#region Bot Token
-var token = "NjAxOTY3Mjg0Mzk0OTE3OTAw.XTaNWg.q5oDz5ZrWB17GBngisdOTTmSwYk"
+var token = "TOKEN"
 //#endregion
 
 const foxPhrases = [
