@@ -6,7 +6,7 @@ const request = require('request');
 const embed = new Discord.RichEmbed()
 
 //#region Bot Token
-var token = "BOT.TOKEN"
+var token = "NjAxOTY3Mjg0Mzk0OTE3OTAw.XTaNWg.q5oDz5ZrWB17GBngisdOTTmSwYk"
 //#endregion
 
 const foxPhrases = [
@@ -78,12 +78,13 @@ client.on('message', msg => {
             fox()
             function fox()
             {
-                embed.setColor(randomcolour())
+                let foxEmbed = new Discord.RichEmbed()
+                .setColor(randomcolour())
                 .setTitle(foxPhrases[Math.floor(Math.random()*foxPhrases.length)])
                 .setAuthor(msg.author.username, msg.author.avatarURL)
                 .setImage("https://dagg.xyz/randomfox/images/" + Math.floor(Math.random() * 125) + ".jpg")
                 .setFooter(Date())
-                msg.channel.send(embed)
+                msg.channel.send(foxEmbed)
                 .then(msg => {
                     msg.createReactionCollector(filter , { time: 60000 })
                     .on('collect', reaction => {
@@ -112,13 +113,14 @@ client.on('message', msg => {
             cat()
             function cat()
             {
-                request('http://aws.random.cat/meow', { json: true} , (err, res, body) => {         
-                    embed.setColor(randomcolour())
+                request('http://aws.random.cat/meow', { json: true} , (err, res, body) => {   
+                    let catEmbed = new Discord.RichEmbed()      
+                    .setColor(randomcolour())
                     .setTitle(catPhrases[Math.floor(Math.random()*catPhrases.length)])
                     .setAuthor(msg.author.username, msg.author.avatarURL)
                     .setImage(body.file)
                     .setFooter(Date())
-                    msg.channel.send(embed)
+                    msg.channel.send(catEmbed)
                     .then(msg => {
                         msg.createReactionCollector(filter , { time: 60000 })
                         .on('collect', reaction => {
@@ -148,13 +150,14 @@ client.on('message', msg => {
             dog()
             function dog()
             {
-                request('https://dog.ceo/api/breeds/image/random', { json: true} , (err, res, body) => {         
-                    embed.setColor(randomcolour())
+                request('https://dog.ceo/api/breeds/image/random', { json: true} , (err, res, body) => { 
+                    let dogEmbed = new Discord.RichEmbed()
+                    .setColor(randomcolour())
                     .setTitle(dogPhrases[Math.floor(Math.random()*dogPhrases.length)])
                     .setAuthor(msg.author.username, msg.author.avatarURL)
                     .setImage(body.message)
                     .setFooter(Date())
-                    msg.channel.send(embed)
+                    msg.channel.send(dogEmbed)
                     .then(msg => {
                         msg.createReactionCollector(filter , { time: 60000 })
                         .on('collect', reaction => {
@@ -181,11 +184,12 @@ client.on('message', msg => {
 
         //#region /time
         case "/time":
-            embed.setColor(randomcolour())
+            let timeEmbed = new Discord.RichEmbed()
+            .setColor(randomcolour())
             .setDescription("**It's time to go to bed, you dolt.**")
             .setFooter(Date())
             .setAuthor(msg.author.username, msg.author.avatarURL)
-            msg.channel.send(embed)
+            msg.channel.send(timeEmbed)
             break
         //#endregion
 
@@ -205,12 +209,12 @@ client.on('message', msg => {
             {
                 pingColour = "00ffe5"
             }
-            embed.setColor(pingColour)
-            .setDescription("Pong!")
-            .addField("Ping from here to the server:", pingMil)
+            let pingEmbed = new Discord.RichEmbed()
+            .setColor(pingColour)
+            .setDescription("Ping: " + "**" + pingMil + "** milliseconds")
             .setFooter(Date())
             .setAuthor(msg.author.username, msg.author.avatarURL)
-            msg.channel.send(embed)
+            msg.channel.send(pingEmbed)
             break
         //#endregion
     }
