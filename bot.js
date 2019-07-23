@@ -217,6 +217,23 @@ client.on('message', msg => {
             msg.channel.send(pingEmbed)
             break
         //#endregion
+
+        //#region /help
+        case "/help":
+            let helpEmbed = new Discord.RichEmbed()
+            .setColor(randomcolour())
+            .addField("/about", "About the bot", true)
+            .addField("/ping", "Pong!", true)
+            .addField("/time", "Tells the time", true)
+            .addField("/fox", "Post a random fox", true)
+            .addField("/cat", "Post a random cat", true)
+            .addField("/dog", "Post a random dog", true)
+            .setFooter(Date())
+            .setAuthor(msg.author.username, msg.author.avatarURL)
+            .setThumbnail("https://dagg.xyz/randomfox/images/" + Math.floor(Math.random() * 125) + ".jpg")
+            msg.channel.send(helpEmbed)
+            break
+        //#endregion
     }
 })
 
