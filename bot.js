@@ -50,7 +50,7 @@ client.login(token.token)
 
 client.on('ready', () => {
     console.log('Ready!')
-    client.user.setActivity("Foxes in " + client.guilds.size + " guilds", { type: 'LISTENING' })
+    client.user.setActivity("foxes in " + client.guilds.size + " guilds", { type: 'LISTENING' })
 })
 
 let voiceActive = false
@@ -245,12 +245,8 @@ client.on('message', msg => {
         //#region play
         case "play":
             if(voiceActive == true) { msg.reply("I'm already playing something!") }
-            else if(argument[0].includes("https://www.youtube.com/watch?v=") == false)
-            {
-                msg.reply("Invalid URL")
-                return
-            }
-            else if(msg.member.voiceChannel && voiceActive == false){
+            else if (msg.member.voiceChannel == undefined) { msg.reply("You aren't in a voice channel!") }
+            else if(argument[0].includes("https://www.youtube.com/watch?v=") || argument[0].includes("https://youtu.be/")){
                 url = argument[0]
                 let video = youtube(url)
                 youtube.getInfo(url, (error, info) => {
@@ -271,7 +267,7 @@ client.on('message', msg => {
                     dispatch.on('end', z => { voiceActive = false, connection.dispatcher.end() })
                 })
             }
-            else { msg.reply("You aren't in a voice channel!") }
+            else { msg.reply("Invalid URL")}
             break
         //#endregion
 
