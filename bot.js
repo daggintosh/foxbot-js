@@ -234,7 +234,6 @@ client.on('message', msg => {
             .addField(config.prefix + "cat", "Post a random cat", true)
             .addField(config.prefix + "dog", "Post a random dog", true)
             .addField(config.prefix + "play [YouTube URL]", "Plays a song", true)
-            .addField(config.prefix + "stop", "Stops the song", true)
             .setFooter(Date())
             .setAuthor(msg.author.username, msg.author.avatarURL)
             .setThumbnail("https://dagg.xyz/randomfox/images/" + Math.floor(Math.random() * 125) + ".jpg")
@@ -244,41 +243,44 @@ client.on('message', msg => {
 
         //#region play
         case "play":
-            if(voiceActive == true) { msg.reply("I'm already playing something!") }
+            if (argument[0] == undefined){ msg.reply ("Do you want me to just scream?") }
+            else if(voiceActive == true) { msg.reply("I'm already playing something!") }
             else if (msg.member.voiceChannel == undefined) { msg.reply("You aren't in a voice channel!") }
-            else if(argument[0].includes("https://www.youtube.com/watch?v=") || argument[0].includes("https://youtu.be/")){
-                url = argument[0]
+            else if(argument[0].includes("youtube.com/watch?v=") || argument[0].includes("youtu.be/")){
+                let voiceChannel = msg.member.voiceChannel;
+                let url = argument[0]
                 let video = youtube(url)
                 youtube.getInfo(url, (error, info) => {
-                    let ytEmbed = new Discord.RichEmbed()
-                    .setAuthor(msg.author.username, msg.author.avatarURL)
-                    .setFooter(Date())
-                    .addField("**Now Playing**", info.title)
-                    .setTitle(info.video_url)
-                    .setURL(info.video_url)
-                    .setColor(randomcolour())
-                    msg.channel.send(ytEmbed)
-                })
-                msg.member.voiceChannel.join()
-                .then(connection => {
-                    voiceActive = true;
-                    let dispatch = connection.playStream(video)
-                    dispatch.setVolume(0.5)
-                    dispatch.on('end', z => { voiceActive = false, connection.dispatcher.end() })
+                    voiceChannel.join()
+                    .then(connection => {
+                        voiceActive = true;
+                        let dispatch = connection.playStream(video)
+                        dispatch.setVolume(0.5)
+                        let ytEmbed = new Discord.RichEmbed()
+                        .setAuthor(msg.author.username, msg.author.avatarURL)
+                        .setFooter(Date())
+                        .addField("**Now Playing**", info.title)
+                        .setTitle(info.video_url)
+                        .setURL(info.video_url)
+                        .setColor(randomcolour())
+                        msg.channel.send(ytEmbed)
+                        .then(msg => {
+                            dispatch.on('end', z => { voiceActive = false, connection.dispatcher.end(), voiceChannel.leave(), msg.delete()})
+                            msg.createReactionCollector(filter , { time: null })
+                            .on('collect', reaction => {
+                                switch(reaction.emoji.name)
+                                {
+                                    case "⏹":
+                                        voiceChannel.leave()
+                                        break
+                                }
+                            })
+                            msg.react("⏹")
+                        })
+                    })
                 })
             }
             else { msg.reply("Invalid URL")}
-            break
-        //#endregion
-
-        //#region stop
-        case "stop":
-            if(msg.member.voiceChannel)
-            {
-                msg.member.voiceChannel.leave()
-                voiceActive = false
-            }
-            else { msg.reply("You aren't in a voice channel!") }
             break
         //#endregion
     }
