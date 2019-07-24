@@ -69,7 +69,7 @@ client.on('message', msg => {
             .setColor(randomcolour())
             .setThumbnail("https://dagg.xyz/randomfox/images/" + Math.floor(Math.random() * 125) + ".jpg")
             .setTitle("GitHub")
-            .setURL("https://github.com/daggintosh/foxbot-js")
+            .setURL("https://github.com/dagg-1/foxbot-js")
             .setDescription("**Hello!**")
             .setAuthor("FoxBot", "https://cdn.discordapp.com/avatars/601967284394917900/f25955e890f89f1015762647f82ea555.webp")
             .setFooter(Date())
@@ -284,4 +284,4 @@ client.on('message', msg => {
             break
         //#endregion
     }
-})
+});
