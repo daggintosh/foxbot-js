@@ -51,6 +51,8 @@ client.on('ready', () => {
     client.user.setActivity("Foxes in " + client.guilds.size + " guilds", { type: 'LISTENING' })
 })
 
+let voiceActive = false
+
 client.on('message', msg => {
     const filter = (reaction, user) => reaction.emoji.name === "➡" && user.id === msg.author.id || reaction.emoji.name === "⏹" && user.id === msg.author.id
     switch(msg.content)
@@ -109,7 +111,7 @@ client.on('message', msg => {
             cat()
             function cat()
             {
-                request('http://aws.random.cat/meow', { json: true} , (error, response, body) => {   
+                request('http://aws.random.cat/meow', { json: true } , (error, response, body) => {   
                     let catEmbed = new Discord.RichEmbed()      
                     .setColor(randomcolour())
                     .setTitle(catPhrases[Math.floor(Math.random()*catPhrases.length)])
@@ -230,6 +232,24 @@ client.on('message', msg => {
             msg.channel.send(helpEmbed)
             break
         //#endregion
+
+        //#region /play
+        // This will move to it's own function if needed
+        case "/play":
+            if(msg.member.voiceChannel && voiceActive == false){
+                msg.reply("Now playing, DEBUG")
+                msg.member.voiceChannel.join()
+                .then(connection => {
+                    voiceActive = true;
+                    let dispatch = connection.playFile('../test.mp3') // Test file, replace later
+                    dispatch.setVolume(0.5)
+                    dispatch.on('end', z => { voiceActive = false })       
+                })
+            }
+            else if(active = true) { msg.reply("I'm already playing something!") }
+            else { msg.reply("You aren't in a voice channel!") }
+            break
+        //#region
     }
 })
 
