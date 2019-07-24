@@ -46,6 +46,19 @@ const dogPhrases = [
     "Wow! A dog!"
 ]
 
+const wolfPhrases = [
+    "A wolf appears!", 
+    "A wolf is here!", 
+    "Theres a wolf here!", 
+    "A wolf has manifested!",
+    "A wolf has taken hold!",
+    "There's a wolf in my boot!",
+    "A wild wolf has appeared!",
+    "A wolf challenges you!",
+    "You see a wolf!",
+    "Wow! A wolf!"
+]
+
 client.login(token.token)
 
 client.on('ready', () => {
@@ -272,6 +285,7 @@ client.on('message', msg => {
             .addField(config.prefix + "fox", "Post a random fox", true)
             .addField(config.prefix + "cat", "Post a random cat", true)
             .addField(config.prefix + "dog", "Post a random dog", true)
+            .addField(config.prefix + "wolf", "Post a random wolf", true)
             .addField(config.prefix + "play [YouTube URL]", "Plays a song", true)
             .setFooter(Date())
             .setAuthor(msg.author.username, msg.author.avatarURL)
