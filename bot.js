@@ -78,15 +78,17 @@ client.on('message', msg => {
     {
         //#region about
         case "about":
-            let aboutEmbed = new Discord.RichEmbed()
-            .setColor(randomcolour())
-            .setThumbnail("https://dagg.xyz/randomfox/images/" + Math.floor(Math.random() * 125) + ".jpg")
-            .setTitle("GitHub")
-            .setURL("https://github.com/dagg-1/foxbot-js")
-            .setDescription("**Hello!**")
-            .setAuthor("FoxBot", "https://cdn.discordapp.com/avatars/601967284394917900/f25955e890f89f1015762647f82ea555.webp")
-            .setFooter(Date())
-            msg.channel.send(aboutEmbed)
+            request("https://dagg.xyz/randomfox/", { json: true } , (error, response, body) => {
+                let aboutEmbed = new Discord.RichEmbed()
+                .setColor(randomcolour())
+                .setThumbnail(body.link)
+                .setTitle("GitHub")
+                .setURL("https://github.com/dagg-1/foxbot-js")
+                .setDescription("**Hello!**")
+                .setAuthor("FoxBot", "https://cdn.discordapp.com/avatars/601967284394917900/f25955e890f89f1015762647f82ea555.webp")
+                .setFooter(Date())
+                msg.channel.send(aboutEmbed)
+            })
             break;
         //#endregion
 
@@ -276,21 +278,23 @@ client.on('message', msg => {
 
         //#region help
         case "help":
-            let helpEmbed = new Discord.RichEmbed()
-            .setColor(randomcolour())
-            .addField(config.prefix + "help", "Displays this screen", true)
-            .addField(config.prefix + "about", "About the bot", true)
-            .addField(config.prefix + "ping", "Pong!", true)
-            .addField(config.prefix + "time", "Tells the time", true)
-            .addField(config.prefix + "fox", "Post a random fox", true)
-            .addField(config.prefix + "cat", "Post a random cat", true)
-            .addField(config.prefix + "dog", "Post a random dog", true)
-            .addField(config.prefix + "wolf", "Post a random wolf", true)
-            .addField(config.prefix + "play [YouTube URL]", "Plays a song", true)
-            .setFooter(Date())
-            .setAuthor(msg.author.username, msg.author.avatarURL)
-            .setThumbnail("https://dagg.xyz/randomfox/images/" + Math.floor(Math.random() * 125) + ".jpg")
-            msg.channel.send(helpEmbed)
+            request("https://dagg.xyz/randomfox/", { json: true } , (error, response, body) => {
+                let helpEmbed = new Discord.RichEmbed()
+                .setColor(randomcolour())
+                .addField(config.prefix + "help", "Displays this screen", true)
+                .addField(config.prefix + "about", "About the bot", true)
+                .addField(config.prefix + "ping", "Pong!", true)
+                .addField(config.prefix + "time", "Tells the time", true)
+                .addField(config.prefix + "fox", "Post a random fox", true)
+                .addField(config.prefix + "cat", "Post a random cat", true)
+                .addField(config.prefix + "dog", "Post a random dog", true)
+                .addField(config.prefix + "wolf", "Post a random wolf", true)
+                .addField(config.prefix + "play [YouTube URL]", "Plays a song", true)
+                .setFooter(Date())
+                .setAuthor(msg.author.username, msg.author.avatarURL)
+                .setThumbnail(body.link)
+                msg.channel.send(helpEmbed)
+            })
             break
         //#endregion
 
