@@ -3,11 +3,7 @@ const client = new Discord.Client()
 const randomcolour = require('randomcolor')
 const request = require('request');
 
-const embed = new Discord.RichEmbed()
-
-//#region Bot Token
-var token = "TOKEN"
-//#endregion
+const token = require("./token.json"); // BOT TOKEN
 
 const foxPhrases = [
     "A fox appears!", 
@@ -48,11 +44,11 @@ const dogPhrases = [
     "Wow! A dog!"
 ]
 
-client.login(token)
+client.login(token.token)
 
 client.on('ready', () => {
     console.log('Ready!')
-    client.user.setActivity("Foxes in " + client.guilds.size + " Guilds", { type: 'LISTENING' })
+    client.user.setActivity("Foxes in " + client.guilds.size + " guilds", { type: 'LISTENING' })
 })
 
 client.on('message', msg => {
@@ -103,7 +99,7 @@ client.on('message', msg => {
                     .then(z =>{
                         msg.react("⏹")
                     })
-                })     
+                }) 
             }
             break
         //#endregion
@@ -113,7 +109,7 @@ client.on('message', msg => {
             cat()
             function cat()
             {
-                request('http://aws.random.cat/meow', { json: true} , (err, res, body) => {   
+                request('http://aws.random.cat/meow', { json: true} , (error, response, body) => {   
                     let catEmbed = new Discord.RichEmbed()      
                     .setColor(randomcolour())
                     .setTitle(catPhrases[Math.floor(Math.random()*catPhrases.length)])
@@ -150,7 +146,7 @@ client.on('message', msg => {
             dog()
             function dog()
             {
-                request('https://dog.ceo/api/breeds/image/random', { json: true} , (err, res, body) => { 
+                request('https://dog.ceo/api/breeds/image/random', { json: true} , (error, response, body) => { 
                     let dogEmbed = new Discord.RichEmbed()
                     .setColor(randomcolour())
                     .setTitle(dogPhrases[Math.floor(Math.random()*dogPhrases.length)])
@@ -211,7 +207,7 @@ client.on('message', msg => {
             }
             let pingEmbed = new Discord.RichEmbed()
             .setColor(pingColour)
-            .setDescription("Ping: " + "**" + pingMil + "** milliseconds")
+            .setDescription("Ping: " + "**" + Math.floor(pingMil) + "** milliseconds")
             .setFooter(Date())
             .setAuthor(msg.author.username, msg.author.avatarURL)
             msg.channel.send(pingEmbed)
