@@ -46,6 +46,19 @@ const dogPhrases = [
     "Wow! A dog!"
 ]
 
+const wolfPhrases = [
+    "A wolf appears!", 
+    "A wolf is here!", 
+    "Theres a wolf here!", 
+    "A wolf has manifested!",
+    "A wolf has taken hold!",
+    "There's a wolf in my boot!",
+    "A wild wolf has appeared!",
+    "A wolf challenges you!",
+    "You see a wolf!",
+    "Wow! A wolf!"
+]
+
 client.login(token.token)
 
 client.on('ready', () => {
@@ -82,30 +95,32 @@ client.on('message', msg => {
             fox()
             function fox()
             {
-                let foxEmbed = new Discord.RichEmbed()
-                .setColor(randomcolour())
-                .setTitle(foxPhrases[Math.floor(Math.random()*foxPhrases.length)])
-                .setAuthor(msg.author.username, msg.author.avatarURL)
-                .setImage("https://dagg.xyz/randomfox/images/" + Math.floor(Math.random() * 125) + ".jpg")
-                .setFooter(Date())
-                msg.channel.send(foxEmbed)
-                .then(msg => {
-                    msg.createReactionCollector(filter , { time: 60000 })
-                    .on('collect', reaction => {
-                        switch(reaction.emoji.name)
-                        {
-                            case "➡":
-                                msg.delete()
-                                fox()
-                                break
-                            case "⏹":
-                                msg.delete()
-                                break
-                        }
-                    })
-                    msg.react("➡")
-                    .then(z =>{
-                        msg.react("⏹")
+                request("https://dagg.xyz/randomfox/", { json: true } , (error, response, body) => { 
+                    let foxEmbed = new Discord.RichEmbed()      
+                    .setColor(randomcolour())
+                    .setTitle(foxPhrases[Math.floor(Math.random()*foxPhrases.length)])
+                    .setAuthor(msg.author.username, msg.author.avatarURL)
+                    .setImage(body.link)
+                    .setFooter(Date())
+                    msg.channel.send(foxEmbed)
+                    .then(msg => {
+                        msg.createReactionCollector(filter , { time: 60000 })
+                        .on('collect', reaction => {
+                            switch(reaction.emoji.name)
+                            {
+                                case "➡":
+                                    msg.delete()
+                                    fox()
+                                    break
+                                case "⏹":
+                                    msg.delete()
+                                    break
+                            }
+                        })
+                        msg.react("➡")
+                        .then(z =>{
+                            msg.react("⏹")
+                        })
                     })
                 }) 
             }
@@ -133,6 +148,43 @@ client.on('message', msg => {
                                 case "➡":
                                     msg.delete()
                                     cat()
+                                    break
+                                case "⏹":
+                                    msg.delete()
+                                    break
+                            }
+                        })
+                        msg.react("➡")
+                        .then(z =>{
+                            msg.react("⏹")
+                        })
+                    })
+                })
+            }
+            break
+        //#endregion
+
+        //#region wolf
+        case "wolf":
+            wolf()
+            function wolf()
+            {
+                request("https://dagg.xyz/randomwolf/", { json: true } , (error, response, body) => { 
+                    let wolfEmbed = new Discord.RichEmbed()      
+                    .setColor(randomcolour())
+                    .setTitle(wolfPhrases[Math.floor(Math.random()*foxPhrases.length)])
+                    .setAuthor(msg.author.username, msg.author.avatarURL)
+                    .setImage(body.link)
+                    .setFooter(Date())
+                    msg.channel.send(wolfEmbed)
+                    .then(msg => {
+                        msg.createReactionCollector(filter , { time: 60000 })
+                        .on('collect', reaction => {
+                            switch(reaction.emoji.name)
+                            {
+                                case "➡":
+                                    msg.delete()
+                                    wolf()
                                     break
                                 case "⏹":
                                     msg.delete()
