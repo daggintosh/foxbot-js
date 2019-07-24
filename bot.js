@@ -1,9 +1,11 @@
 const Discord = require('discord.js')
 const client = new Discord.Client()
 const randomcolour = require('randomcolor')
+const youtube = require('ytdl-core')
 const request = require('request');
 
 const token = require("./token.json"); // BOT TOKEN
+const config = require("./config.json") // CONFIG
 
 const foxPhrases = [
     "A fox appears!", 
@@ -54,11 +56,15 @@ client.on('ready', () => {
 let voiceActive = false
 
 client.on('message', msg => {
+    if(msg.content.indexOf(config.prefix) !== 0) return
     const filter = (reaction, user) => reaction.emoji.name === "➡" && user.id === msg.author.id || reaction.emoji.name === "⏹" && user.id === msg.author.id
-    switch(msg.content)
+    const argument = msg.content.slice(config.prefix.length).trim().split(/ +/g);
+    const command = argument.shift().toLowerCase()
+
+    switch(command)
     {
-        //#region /about
-        case "/about":
+        //#region about
+        case "about":
             let aboutEmbed = new Discord.RichEmbed()
             .setColor(randomcolour())
             .setThumbnail("https://dagg.xyz/randomfox/images/" + Math.floor(Math.random() * 125) + ".jpg")
@@ -71,8 +77,8 @@ client.on('message', msg => {
             break;
         //#endregion
 
-        //#region /fox
-        case "/fox":
+        //#region fox
+        case "fox":
             fox()
             function fox()
             {
@@ -106,8 +112,8 @@ client.on('message', msg => {
             break
         //#endregion
 
-        //#region /cat
-        case "/cat":
+        //#region cat
+        case "cat":
             cat()
             function cat()
             {
@@ -143,8 +149,8 @@ client.on('message', msg => {
             break
         //#endregion
         
-        //#region /dog
-        case "/dog":
+        //#region dog
+        case "dog":
             dog()
             function dog()
             {
@@ -180,8 +186,8 @@ client.on('message', msg => {
             break
         //#endregion
 
-        //#region /time
-        case "/time":
+        //#region time
+        case "time":
             let timeEmbed = new Discord.RichEmbed()
             .setColor(randomcolour())
             .setDescription("**It's time to go to bed, you dolt.**")
@@ -191,8 +197,8 @@ client.on('message', msg => {
             break
         //#endregion
 
-        //#region /ping
-        case "/ping":
+        //#region ping
+        case "ping":
             var pingMil = client.ping
             var pingColour = 0
             if(pingMil >= 200)
@@ -216,16 +222,19 @@ client.on('message', msg => {
             break
         //#endregion
 
-        //#region /help
-        case "/help":
+        //#region help
+        case "help":
             let helpEmbed = new Discord.RichEmbed()
             .setColor(randomcolour())
-            .addField("/about", "About the bot", true)
-            .addField("/ping", "Pong!", true)
-            .addField("/time", "Tells the time", true)
-            .addField("/fox", "Post a random fox", true)
-            .addField("/cat", "Post a random cat", true)
-            .addField("/dog", "Post a random dog", true)
+            .addField(config.prefix + "help", "Displays this screen", true)
+            .addField(config.prefix + "about", "About the bot", true)
+            .addField(config.prefix + "ping", "Pong!", true)
+            .addField(config.prefix + "time", "Tells the time", true)
+            .addField(config.prefix + "fox", "Post a random fox", true)
+            .addField(config.prefix + "cat", "Post a random cat", true)
+            .addField(config.prefix + "dog", "Post a random dog", true)
+            .addField(config.prefix + "play [YouTube URL]", "Plays a song", true)
+            .addField(config.prefix + "stop", "Stops the song", true)
             .setFooter(Date())
             .setAuthor(msg.author.username, msg.author.avatarURL)
             .setThumbnail("https://dagg.xyz/randomfox/images/" + Math.floor(Math.random() * 125) + ".jpg")
@@ -233,23 +242,48 @@ client.on('message', msg => {
             break
         //#endregion
 
-        //#region /play
-        // This will move to it's own function if needed
-        case "/play":
-            if(msg.member.voiceChannel && voiceActive == false){
-                msg.reply("Now playing, DEBUG")
+        //#region play
+        case "play":
+            if(voiceActive == true) { msg.reply("I'm already playing something!") }
+            else if(argument[0].includes("https://www.youtube.com/watch?v=") == false)
+            {
+                msg.reply("Invalid URL")
+                return
+            }
+            else if(msg.member.voiceChannel && voiceActive == false){
+                url = argument[0]
+                let video = youtube(url)
+                youtube.getInfo(url, (error, info) => {
+                    let ytEmbed = new Discord.RichEmbed()
+                    .setAuthor(msg.author.username, msg.author.avatarURL)
+                    .setFooter(Date())
+                    .addField("**Now Playing**", info.title)
+                    .setTitle(info.video_url)
+                    .setURL(info.video_url)
+                    .setColor(randomcolour())
+                    msg.channel.send(ytEmbed)
+                })
                 msg.member.voiceChannel.join()
                 .then(connection => {
                     voiceActive = true;
-                    let dispatch = connection.playFile('../test.mp3') // Test file, replace later
+                    let dispatch = connection.playStream(video)
                     dispatch.setVolume(0.5)
-                    dispatch.on('end', z => { voiceActive = false })       
+                    dispatch.on('end', z => { voiceActive = false, connection.dispatcher.end() })
                 })
             }
-            else if(active = true) { msg.reply("I'm already playing something!") }
             else { msg.reply("You aren't in a voice channel!") }
             break
-        //#region
+        //#endregion
+
+        //#region stop
+        case "stop":
+            if(msg.member.voiceChannel)
+            {
+                msg.member.voiceChannel.leave()
+                voiceActive = false
+            }
+            else { msg.reply("You aren't in a voice channel!") }
+            break
+        //#endregion
     }
 })
-
