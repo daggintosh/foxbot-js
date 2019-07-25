@@ -303,7 +303,7 @@ client.on('message', msg => {
             if (argument[0] == undefined){ msg.reply ("Do you want me to just scream?") }
             else if(voiceActive == true) { msg.reply("I'm already playing something!") }
             else if (msg.member.voiceChannel == undefined) { msg.reply("You aren't in a voice channel!") }
-            else if(argument[0].includes("youtube.com/watch?v=") || argument[0].includes("youtu.be/")){
+            else if(argument[0].includes("youtube.com/watch?v=") || argument[0].includes("https://youtu.be/")){
                 let voiceChannel = msg.member.voiceChannel;
                 let url = argument[0]
                 let video = youtube(url)
@@ -322,7 +322,7 @@ client.on('message', msg => {
                         .setColor(randomcolour())
                         msg.channel.send(ytEmbed)
                         .then(msg => {
-                            dispatch.on('end', z => { voiceActive = false, connection.dispatcher.end(), voiceChannel.leave(), msg.delete()})
+                            dispatch.on('end', z => { voiceActive = false, msg.delete(), voiceChannel.leave(), connection.dispatcher.end()})
                             msg.createReactionCollector(filter , { time: null })
                             .on('collect', reaction => {
                                 switch(reaction.emoji.name)
