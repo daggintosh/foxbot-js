@@ -66,8 +66,7 @@ client.login(token.token)
 client.on('ready', () => {
     console.log('Ready!')
     client.user.setActivity("foxes in " + client.guilds.size + " guilds", { type: 'LISTENING' })
-    let everyone = client.guilds
-    everyone.tap( function(guild) {
+    client.guilds.tap( guild => {
         voiceActive[guild.id] = false;
     }) 
 })
