@@ -317,7 +317,7 @@ client.on('message', msg => {
                         let ytEmbed = new Discord.RichEmbed()
                         .setAuthor(info.author.name, info.author.avatar)
                         .setFooter(Date())
-                        .addField("**Now Playing**", info.video_id)
+                        .setDescription("**Now Playing**")
                         .setTitle(info.video_url)
                         .setURL(info.video_url)
                         .setColor(randomcolour())
