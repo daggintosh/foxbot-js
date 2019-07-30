@@ -345,7 +345,7 @@ client.on('message', msg => {
                                         msg.delete(),
                                         play()
                                     }
-                                else {
+                                    else {
                                         voiceActive[msg.member.guild.id] = false, 
                                         msg.delete(), 
                                         voiceChannel.leave(), 
