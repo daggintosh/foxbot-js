@@ -73,7 +73,13 @@ client.on('ready', () => {
 
 client.on('message', msg => {
     if(msg.content.indexOf(config.prefix) !== 0) return
-    const filter = (reaction, user) => reaction.emoji.name === "➡" && user.id === msg.author.id || reaction.emoji.name === "⏹" && user.id === msg.author.id
+    const filter = (reaction, user) => 
+    reaction.emoji.name === "➡" && user.id === msg.author.id 
+    || reaction.emoji.name === "⏹" && user.id === msg.author.id 
+    || reaction.emoji.name === "🔁" && user.id === msg.author.id
+    || reaction.emoji.name === "▶" && user.id === msg.author.id
+    || reaction.emoji.name === "⏸" && user.id === msg.author.id
+
     const argument = msg.content.slice(config.prefix.length).trim().split(/ +/g);
     const command = argument.shift().toLowerCase()
 
@@ -303,45 +309,80 @@ client.on('message', msg => {
 
         //#region play
         case "play":
-            if (argument[0] == undefined){ msg.reply ("Do you want me to just scream?") }
-            else if(voiceActive[msg.member.guild.id] == true) { msg.reply("I'm already playing something!") }
-            else if (msg.member.voiceChannel == undefined) { msg.reply("You aren't in a voice channel!") }
-            else if(argument[0].includes("youtube.com/watch?v=") || argument[0].includes("https://youtu.be/")){
-                let voiceChannel = msg.member.voiceChannel;
-                let url = argument[0]
-                let video = youtube(url)
-                youtube.getInfo(url, (error, info) => {
-                    voiceChannel.join()
-                    .then(connection => {
-                        voiceActive[msg.member.guild.id] = true
-                        let dispatch = connection.playStream(video)
-                        dispatch.setVolume(0.5)
-                        let ytEmbed = new Discord.RichEmbed()
-                        .setAuthor(info.author.name, info.author.avatar)
-                        .setFooter(info.player_response.videoDetails.viewCount.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + " views")
-                        .addField("Now Playing", info.player_response.videoDetails.title)
-                        .setThumbnail(info.player_response.videoDetails.thumbnail.thumbnails[0].url)
-                        .setTitle(info.video_url)
-                        .setURL(info.video_url)
-                        .setColor("#ff1100")
-                        msg.channel.send(ytEmbed)
-                        .then(msg => {
-                            dispatch.on('end', z => { voiceActive[msg.member.guild.id] = false, msg.delete(), voiceChannel.leave(), connection.dispatcher.end()})
-                            msg.createReactionCollector(filter , { time: null })
-                            .on('collect', reaction => {
-                                switch(reaction.emoji.name)
-                                {
-                                    case "⏹":
-                                        voiceChannel.leave()
-                                        break
-                                }
+            play()
+            function play() {
+                if (argument[0] == undefined){ msg.reply ("Do you want me to just scream?") }
+                else if(voiceActive[msg.member.guild.id] == true) { msg.reply("I'm already playing something!") }
+                else if (msg.member.voiceChannel == undefined) { msg.reply("You aren't in a voice channel!") }
+                else if(argument[0].includes("youtube.com/watch?v=") || argument[0].includes("https://youtu.be/")){
+                    let voiceChannel = msg.member.voiceChannel;
+                    let url = argument[0]
+                    let video = youtube(url)
+                    youtube.getInfo(url, (error, info) => {
+                        voiceChannel.join()
+                        .then(connection => {
+                            let repeat = false
+                            voiceActive[msg.member.guild.id] = true
+                            let dispatch = connection.playStream(video)
+                            dispatch.setVolume(0.5)
+                            let ytEmbed = new Discord.RichEmbed()
+                            .setAuthor(info.author.name, info.author.avatar)
+                            .setFooter(info.player_response.videoDetails.viewCount.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + " views")
+                            .addField("Now Playing", info.player_response.videoDetails.title)
+                            .setThumbnail(info.player_response.videoDetails.thumbnail.thumbnails[0].url)
+                            .setTitle(info.video_url)
+                            .setURL(info.video_url)
+                            .setColor("#ff1100")
+                            msg.channel.send(ytEmbed)
+                            .then(msg => {
+                                dispatch.on('end', z => { 
+                                    if (repeat === true) {
+                                        voiceActive[msg.member.guild.id] = false,
+                                        msg.delete(),
+                                        play()
+                                    }
+                                else {
+                                        voiceActive[msg.member.guild.id] = false, 
+                                        msg.delete(), 
+                                        voiceChannel.leave(), 
+                                        connection.dispatcher.end()
+                                    }
+                                })
+                                msg.createReactionCollector(filter , { time: null })
+                                .on('collect', reaction => {
+                                    switch(reaction.emoji.name)
+                                    {
+                                        case "⏹":
+                                            repeat = false
+                                            voiceChannel.leave()
+                                            break
+                                        case "🔁":
+                                            repeat = true
+                                            break
+                                        case "⏸":
+                                            dispatch.pause()
+                                            break
+                                        case "▶":
+                                            dispatch.resume()
+                                            break
+                                    }
+                                })
+                                msg.react("▶")
+                                .then(z=>{
+                                    msg.react("⏸")
+                                    .then(z=>{
+                                        msg.react("⏹")
+                                        .then(z=>{
+                                            msg.react("🔁")
+                                        })
+                                    })
+                                })
                             })
-                            msg.react("⏹")
                         })
                     })
-                })
+                }
+                else { msg.reply("Invalid URL")}
             }
-            else { msg.reply("Invalid URL")}
             break
         //#endregion
     }
