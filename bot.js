@@ -59,14 +59,18 @@ const wolfPhrases = [
     "Wow! A wolf!"
 ]
 
+let voiceActive = {}
+
 client.login(token.token)
 
 client.on('ready', () => {
     console.log('Ready!')
     client.user.setActivity("foxes in " + client.guilds.size + " guilds", { type: 'LISTENING' })
+    let everyone = client.guilds
+    everyone.tap( function(guild) {
+        voiceActive[guild.id] = false;
+    }) 
 })
-
-let voiceActive = false
 
 client.on('message', msg => {
     if(msg.content.indexOf(config.prefix) !== 0) return
@@ -301,7 +305,7 @@ client.on('message', msg => {
         //#region play
         case "play":
             if (argument[0] == undefined){ msg.reply ("Do you want me to just scream?") }
-            else if(voiceActive == true) { msg.reply("I'm already playing something!") }
+            else if(voiceActive[msg.member.guild.id] == true) { msg.reply("I'm already playing something!") }
             else if (msg.member.voiceChannel == undefined) { msg.reply("You aren't in a voice channel!") }
             else if(argument[0].includes("youtube.com/watch?v=") || argument[0].includes("https://youtu.be/")){
                 let voiceChannel = msg.member.voiceChannel;
@@ -310,7 +314,7 @@ client.on('message', msg => {
                 youtube.getInfo(url, (error, info) => {
                     voiceChannel.join()
                     .then(connection => {
-                        voiceActive = true;
+                        voiceActive[msg.member.guild.id] = true
                         let dispatch = connection.playStream(video)
                         dispatch.setVolume(0.5)
                         let ytEmbed = new Discord.RichEmbed()
@@ -323,7 +327,7 @@ client.on('message', msg => {
                         .setColor("#ff1100")
                         msg.channel.send(ytEmbed)
                         .then(msg => {
-                            dispatch.on('end', z => { voiceActive = false, msg.delete(), voiceChannel.leave(), connection.dispatcher.end()})
+                            dispatch.on('end', z => { voiceActive[msg.member.guild.id] = false, msg.delete(), voiceChannel.leave(), connection.dispatcher.end()})
                             msg.createReactionCollector(filter , { time: null })
                             .on('collect', reaction => {
                                 switch(reaction.emoji.name)
