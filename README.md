@@ -1,4 +1,4 @@
-# foxbot
+# FoxBot
 Simple robot for Discord.
 
 ## Prerequisites
@@ -6,7 +6,7 @@ Simple robot for Discord.
 - A node package manager (yarn or npm)
 - FFMPEG (Musicbot)
 
-## Setup and run
+## Setup and Run
 ```
 npm i
 npm start
