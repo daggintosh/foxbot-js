@@ -59,7 +59,10 @@ const wolfPhrases = [
     "Wow! A wolf!"
 ]
 
+let defaultPrefix = "!" // Relies on bot always being active
+
 let voiceActive = {}
+let guildPrefixes = {}
 
 client.login(token.token)
 
@@ -67,12 +70,13 @@ client.on('ready', () => {
     console.log('Ready!')
     client.user.setActivity("foxes in " + client.guilds.size + " guilds", { type: 'LISTENING' })
     client.guilds.tap( guild => {
-        voiceActive[guild.id] = false;
+        voiceActive[guild.id] = false
+        guildPrefixes[guild.id] = defaultPrefix
     }) 
 })
 
 client.on('message', msg => {
-    if(msg.content.indexOf(config.prefix) !== 0) return
+    if(msg.content.indexOf(guildPrefixes[msg.member.guild.id]) !== 0) return
     const filter = (reaction, user) => 
     reaction.emoji.name === "➡" && user.id === msg.author.id 
     || reaction.emoji.name === "⏹" && user.id === msg.author.id 
@@ -80,7 +84,7 @@ client.on('message', msg => {
     || reaction.emoji.name === "▶" && user.id === msg.author.id
     || reaction.emoji.name === "⏸" && user.id === msg.author.id
 
-    const argument = msg.content.slice(config.prefix.length).trim().split(/ +/g);
+    const argument = msg.content.slice(guildPrefixes[msg.member.guild.id].length).trim().split(/ +/g);
     const command = argument.shift().toLowerCase()
 
     switch(command)
@@ -290,15 +294,16 @@ client.on('message', msg => {
             request("https://dagg.xyz/randomfox/", { json: true } , (error, response, body) => {
                 let helpEmbed = new Discord.RichEmbed()
                 .setColor(randomcolour())
-                .addField(config.prefix + "help", "Displays this screen", true)
-                .addField(config.prefix + "about", "About the bot", true)
-                .addField(config.prefix + "ping", "Pong!", true)
-                .addField(config.prefix + "time", "Tells the time", true)
-                .addField(config.prefix + "fox", "Post a random fox", true)
-                .addField(config.prefix + "cat", "Post a random cat", true)
-                .addField(config.prefix + "dog", "Post a random dog", true)
-                .addField(config.prefix + "wolf", "Post a random wolf", true)
-                .addField(config.prefix + "play [YouTube URL]", "Plays a song", true)
+                .addField(guildPrefixes[msg.member.guild.id] + "help", "Displays this screen", true)
+                .addField(guildPrefixes[msg.member.guild.id] + "about", "About the bot", true)
+                .addField(guildPrefixes[msg.member.guild.id] + "ping", "Pong!", true)
+                .addField(guildPrefixes[msg.member.guild.id] + "time", "Tells the time", true)
+                .addField(guildPrefixes[msg.member.guild.id] + "fox", "Post a random fox", true)
+                .addField(guildPrefixes[msg.member.guild.id] + "cat", "Post a random cat", true)
+                .addField(guildPrefixes[msg.member.guild.id] + "dog", "Post a random dog", true)
+                .addField(guildPrefixes[msg.member.guild.id] + "wolf", "Post a random wolf", true)
+                .addField(guildPrefixes[msg.member.guild.id] + "play [YouTube URL]", "Plays a song", true)
+                .addField(guildPrefixes[msg.member.guild.id] + "prefix [Prefix]", "Sets server prefix", true)
                 .setFooter(Date())
                 .setAuthor(msg.author.username, msg.author.avatarURL)
                 .setThumbnail(body.link)
@@ -382,6 +387,18 @@ client.on('message', msg => {
                     })
                 }
                 else { msg.reply("Invalid URL")}
+            }
+            break
+        //#endregion
+
+        //#region prefix
+        case "prefix":
+            if(argument[0] == undefined) {
+                msg.reply("The server prefix is currently: " + guildPrefixes[msg.member.guild.id])
+            }
+            else {
+                guildPrefixes[msg.member.guild.id] = argument[0]
+                msg.reply("The server prefix is now: " + guildPrefixes[msg.member.guild.id])
             }
             break
         //#endregion
