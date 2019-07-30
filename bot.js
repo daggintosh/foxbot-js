@@ -5,7 +5,6 @@ const youtube = require('ytdl-core')
 const request = require('request');
 
 const token = require("./token.json"); // BOT TOKEN
-const config = require("./config.json") // CONFIG
 
 const foxPhrases = [
     "A fox appears!", 
