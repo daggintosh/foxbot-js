@@ -308,7 +308,6 @@ client.on('message', msg => {
                 let url = argument[0]
                 let video = youtube(url)
                 youtube.getInfo(url, (error, info) => {
-                    console.log(info)
                     voiceChannel.join()
                     .then(connection => {
                         voiceActive = true;
@@ -317,9 +316,8 @@ client.on('message', msg => {
                         let ytEmbed = new Discord.RichEmbed()
                         .setAuthor(info.author.name, info.author.avatar)
                         .setFooter(Date())
-                        .setDescription("**Now Playing**")
-                        .setTitle(info.video_url)
-                        .setURL(info.video_url)
+                        .setDescription(info.video_url)
+                        .setTitle("Now Playing")
                         .setColor(randomcolour())
                         msg.channel.send(ytEmbed)
                         .then(msg => {
