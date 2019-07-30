@@ -320,7 +320,7 @@ client.on('message', msg => {
                         .setThumbnail(info.player_response.videoDetails.thumbnail.thumbnails[0].url)
                         .setTitle(info.video_url)
                         .setURL(info.video_url)
-                        .setColor(randomcolour())
+                        .setColor("#ff1100")
                         msg.channel.send(ytEmbed)
                         .then(msg => {
                             dispatch.on('end', z => { voiceActive = false, msg.delete(), voiceChannel.leave(), connection.dispatcher.end()})
