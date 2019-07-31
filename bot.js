@@ -2,9 +2,9 @@ const Discord = require('discord.js')
 const client = new Discord.Client()
 const randomcolour = require('randomcolor')
 const youtube = require('ytdl-core')
-const request = require('request');
+const request = require('request')
 
-const token = require("./token.json"); // BOT TOKEN
+const token = require("./token.json") // BOT TOKEN
 
 const foxPhrases = [
     "A fox appears!", 
@@ -83,7 +83,7 @@ client.on('message', msg => {
     || reaction.emoji.name === "▶" && user.id === msg.author.id
     || reaction.emoji.name === "⏸" && user.id === msg.author.id
 
-    const argument = msg.content.slice(guildPrefixes[msg.member.guild.id].length).trim().split(/ +/g);
+    const argument = msg.content.slice(guildPrefixes[msg.member.guild.id].length).trim().split(/ +/g)
     const command = argument.shift().toLowerCase()
 
     switch(command)
@@ -101,7 +101,7 @@ client.on('message', msg => {
                 .setFooter(Date())
                 msg.channel.send(aboutEmbed)
             })
-            break;
+            break
         //#endregion
 
         //#region fox
@@ -319,7 +319,7 @@ client.on('message', msg => {
                 else if(voiceActive[msg.member.guild.id] == true) { msg.reply("I'm already playing something!") }
                 else if (msg.member.voiceChannel == undefined) { msg.reply("You aren't in a voice channel!") }
                 else if(argument[0].includes("youtube.com/watch?v=") || argument[0].includes("https://youtu.be/")){
-                    let voiceChannel = msg.member.voiceChannel;
+                    let voiceChannel = msg.member.voiceChannel
                     let url = argument[0]
                     let video = youtube(url)
                     youtube.getInfo(url, (error, info) => {
