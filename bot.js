@@ -396,8 +396,13 @@ client.on('message', msg => {
                 msg.reply("The server prefix is currently: " + guildPrefixes[msg.member.guild.id])
             }
             else {
-                guildPrefixes[msg.member.guild.id] = argument[0]
-                msg.reply("The server prefix is now: " + guildPrefixes[msg.member.guild.id])
+                if(msg.member.hasPermission("MANAGE_GUILD")){
+                    guildPrefixes[msg.member.guild.id] = argument[0]
+                    msg.reply("The server prefix is now: " + guildPrefixes[msg.member.guild.id])
+                }
+                else {
+                    msg.reply("You don't have the **MANAGE SERVER** permission!")
+                }
             }
             break
         //#endregion
