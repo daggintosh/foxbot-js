@@ -75,7 +75,7 @@ client.on('ready', () => {
 })
 
 client.on('message', msg => {
-    if(msg.content.indexOf(guildPrefixes[msg.member.guild.id]) !== 0) return
+    if(msg.author.bot || msg.content.indexOf(guildPrefixes[msg.member.guild.id]) !== 0) return
     const filter = (reaction, user) => 
     reaction.emoji.name === "➡" && user.id === msg.author.id 
     || reaction.emoji.name === "⏹" && user.id === msg.author.id 
