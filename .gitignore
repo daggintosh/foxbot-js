@@ -89,3 +89,6 @@ typings/
 
 # Token configuration
 token.json
+
+# Misc
+.vscode/settings.json

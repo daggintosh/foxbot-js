@@ -76,6 +76,10 @@ client.on('ready', () => {
     }) 
 })
 
+client.on('guildCreate', guild => {
+    guildPrefixes[guild.id] = defaultPrefix
+})
+
 client.on('message', msg => {
     if(msg.author.bot || msg.content.indexOf(guildPrefixes[msg.member.guild.id]) !== 0) return
     const filter = (reaction, user) => 
