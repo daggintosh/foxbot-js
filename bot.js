@@ -11,7 +11,7 @@ const token = require("./token.json") // BOT TOKEN
 const mongoconf = require("./mongo.json") // MONGODB CONFIGURATION
 const prefconf = require("./config.json") // DEFAULT PREFIX
 
-const store = new keyv('mongodb://' + mongoconf.hostname + ':' + mongoconf.port + '/' + mongoconf.database )
+const store = new keyv(`mongodb://${mongoconf.hostname}:${mongoconf.port}/${mongoconf.database}`)
 
 const foxPhrases = [
     "A fox appears!", 
