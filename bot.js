@@ -5,8 +5,12 @@ const client = new Discord.Client()
 const randomcolour = require('randomcolor')
 const youtube = require('ytdl-core')
 const request = require('request')
+const keyv = require('keyv')
 
 const token = require("./token.json") // BOT TOKEN
+const mongoconf = require("./mongo.json") // MONGODB CONFIGURATION
+
+const store = new keyv('mongodb://' + mongoconf.hostname + ':' + mongoconf.port + '/' + mongoconf.database )
 
 const foxPhrases = [
     "A fox appears!", 
@@ -63,24 +67,28 @@ const wolfPhrases = [
 let defaultPrefix = "!" // Relies on bot always being active
 
 let voiceActive = {}
-let guildPrefixes = {}
 
 client.login(token.token)
 
-client.on('ready', () => {
+client.on('ready', async () => {
     console.log('Ready!')
     client.user.setActivity("foxes in " + client.guilds.size + " guilds", { type: 'LISTENING' })
-    client.guilds.tap( guild => {
+    client.guilds.tap( async guild => {
         voiceActive[guild.id] = false
-        guildPrefixes[guild.id] = defaultPrefix
-    }) 
+        var guildexists = await store.get(guild.id)
+        if (guildexists == undefined)
+        {
+            await store.set(guild.id, defaultPrefix)
+        }
+    })
 })
 
-client.on('guildCreate', guild => {
-    guildPrefixes[guild.id] = defaultPrefix
+client.on('guildCreate', async guild => {
+    voiceActive[guild.id] = false
+    await store.set(guild.id, defaultPrefix)
 })
 
-client.on('message', msg => {
+client.on('message', async msg => {
     if(msg.author.bot) return
     const filter = (reaction, user) => 
         reaction.emoji.name === "➡" && user.id === msg.author.id 
@@ -90,8 +98,9 @@ client.on('message', msg => {
         || reaction.emoji.name === "⏸" && user.id === msg.author.id
 
     if (msg.guild) {
-        if (msg.content.indexOf(guildPrefixes[msg.member.guild.id]) !== 0 ) return 
-        const argument = msg.content.slice(guildPrefixes[msg.member.guild.id].length).trim().split(/ +/g)
+        var prefix = await store.get(msg.member.guild.id)
+        if (msg.content.indexOf(prefix) !== 0 ) return 
+        const argument = msg.content.slice(prefix.length).trim().split(/ +/g)
         const command = argument.shift().toLowerCase()
         switch(command)
         {
@@ -300,16 +309,16 @@ client.on('message', msg => {
                 request("https://dagg.xyz/randomfox/", { json: true } , (error, response, body) => {
                     let helpEmbed = new Discord.RichEmbed()
                     .setColor(randomcolour())
-                    .addField(guildPrefixes[msg.member.guild.id] + "help", "Displays this screen", true)
-                    .addField(guildPrefixes[msg.member.guild.id] + "about", "About the bot", true)
-                    .addField(guildPrefixes[msg.member.guild.id] + "ping", "Pong!", true)
-                    .addField(guildPrefixes[msg.member.guild.id] + "time", "Tells the time", true)
-                    .addField(guildPrefixes[msg.member.guild.id] + "fox", "Post a random fox", true)
-                    .addField(guildPrefixes[msg.member.guild.id] + "cat", "Post a random cat", true)
-                    .addField(guildPrefixes[msg.member.guild.id] + "dog", "Post a random dog", true)
-                    .addField(guildPrefixes[msg.member.guild.id] + "wolf", "Post a random wolf", true)
-                    .addField(guildPrefixes[msg.member.guild.id] + "play [YouTube URL]", "Plays a song", true)
-                    .addField(guildPrefixes[msg.member.guild.id] + "prefix [Prefix]", "Sets server prefix", true)
+                    .addField(prefix + "help", "Displays this screen", true)
+                    .addField(prefix + "about", "About the bot", true)
+                    .addField(prefix + "ping", "Pong!", true)
+                    .addField(prefix + "time", "Tells the time", true)
+                    .addField(prefix + "fox", "Post a random fox", true)
+                    .addField(prefix + "cat", "Post a random cat", true)
+                    .addField(prefix + "dog", "Post a random dog", true)
+                    .addField(prefix + "wolf", "Post a random wolf", true)
+                    .addField(prefix + "play [YouTube URL]", "Plays a song", true)
+                    .addField(prefix + "prefix [Prefix]", "Sets server prefix", true)
                     .setFooter(Date())
                     .setAuthor(msg.author.username, msg.author.avatarURL)
                     .setThumbnail(body.link)
@@ -400,12 +409,12 @@ client.on('message', msg => {
             //#region prefix
             case "prefix":
                 if(argument[0] == undefined) {
-                    msg.reply("The server prefix is currently: " + guildPrefixes[msg.member.guild.id])
+                    msg.reply("The server prefix is currently: " + await store.get(msg.member.guild.id))
                 }
                 else {
                     if(msg.member.hasPermission("MANAGE_GUILD")){
-                        guildPrefixes[msg.member.guild.id] = argument[0]
-                        msg.reply("The server prefix is now: " + guildPrefixes[msg.member.guild.id])
+                        await store.set(msg.member.guild.id, argument[0])
+                        msg.reply("The server prefix is now: " + await store.get(msg.member.guild.id))
                     }
                     else {
                         msg.reply("You don't have the **MANAGE SERVER** permission!")
