@@ -94,7 +94,7 @@ client.on('guildDelete', async guild => {
     await store.delete(guild.id)
 })
 
-client.on('disconnect', () => console.error("The bot has lost connection to the API, you may have lost connection to the internet or the API is having issues."))
+client.on('disconnect', () => console.error("The bot has lost connection to the API."))
 
 client.on('message', async msg => {
     if(msg.author.bot) return
