@@ -297,7 +297,7 @@ client.on('message', async msg => {
                 }
                 let pingEmbed = new Discord.RichEmbed()
                 .setColor(pingColour)
-                .setDescription("Ping: " + "**" + Math.floor(pingMil) + "** milliseconds")
+                .setDescription("Ping: " + "**" + Math.floor(pingMil) + "** ms")
                 .setFooter(Date())
                 .setAuthor(msg.author.username, msg.author.avatarURL)
                 msg.channel.send(pingEmbed)
