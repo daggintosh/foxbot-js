@@ -319,6 +319,7 @@ client.on('message', async msg => {
                     .addField(prefix + "wolf", "Post a random wolf", true)
                     .addField(prefix + "play [YouTube URL]", "Plays a song", true)
                     .addField(prefix + "prefix [Prefix]", "Sets server prefix", true)
+                    .addField(prefix + "info [User Mention]", "Gathers basic info of a user", true)
                     .setFooter(Date())
                     .setAuthor(msg.author.username, msg.author.avatarURL)
                     .setThumbnail(body.link)
