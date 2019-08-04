@@ -84,12 +84,14 @@ client.on('ready', async () => {
 })
 
 client.on('guildCreate', async guild => {
+    client.user.setActivity("foxes in " + client.guilds.size + " guilds", { type: 'LISTENING' })
     console.log("The bot has joined " + guild.name)
     voiceActive[guild.id] = false
     await store.set(guild.id, defaultPrefix)
 })
 
 client.on('guildDelete', async guild => {
+    client.user.setActivity("foxes in " + client.guilds.size + " guilds", { type: 'LISTENING' })
     console.log("The bot has left " + guild.name)
     await store.delete(guild.id)
 })
