@@ -417,7 +417,7 @@ client.on('message', async msg => {
                 break
             //#endregion
 
-            //#region Info
+            //#region info
             case "info":
                 var infoEmbed = new Discord.RichEmbed()
                 if(argument[0] == undefined) {
