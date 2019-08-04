@@ -87,8 +87,9 @@ typings/
 # DynamoDB Local files
 .dynamodb/
 
-# Token configuration
+# Configuration
 token.json
+mongo.json
 
 # Misc
 .vscode/settings.json

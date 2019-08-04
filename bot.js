@@ -7,9 +7,10 @@ const youtube = require('ytdl-core')
 const request = require('request')
 const keyv = require('keyv')
 
-const store = new keyv('mongodb://localhost:27017/local')
-store.on('error', err => console.error('Keyv connection error:', err));
 const token = require("./token.json") // BOT TOKEN
+const mongoconf = require("./mongo.json") // MONGODB CONFIGURATION
+
+const store = new keyv('mongodb://' + mongoconf.hostname + ':' + mongoconf.port + '/' + mongoconf.database )
 
 const foxPhrases = [
     "A fox appears!", 
@@ -74,7 +75,12 @@ client.on('ready', async () => {
     client.user.setActivity("foxes in " + client.guilds.size + " guilds", { type: 'LISTENING' })
     client.guilds.tap( async guild => {
         voiceActive[guild.id] = false
-    }) 
+        var guildexists = await store.get(guild.id)
+        if (guildexists == undefined)
+        {
+            await store.set(guild.id, defaultPrefix)
+        }
+    })
 })
 
 client.on('guildCreate', async guild => {
