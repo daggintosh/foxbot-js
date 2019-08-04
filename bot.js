@@ -80,7 +80,6 @@ client.on('ready', async () => {
         {
             await store.set(guild.id, defaultPrefix)
         }
-        console.log(guild.id + " : " + await store.get(guild.id))
     })
 })
 
