@@ -80,12 +80,17 @@ client.on('ready', async () => {
         {
             await store.set(guild.id, defaultPrefix)
         }
+        console.log(guild.id + " : " + await store.get(guild.id))
     })
 })
 
 client.on('guildCreate', async guild => {
     voiceActive[guild.id] = false
     await store.set(guild.id, defaultPrefix)
+})
+
+client.on('guildDelete', async guild => {
+    await store.delete(guild.id)
 })
 
 client.on('message', async msg => {
