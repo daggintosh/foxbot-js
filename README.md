@@ -5,6 +5,7 @@ Simple robot for Discord.
 - Node
 - A node package manager (yarn or npm)
 - FFMPEG (Musicbot)
+- MongoDB (Extra configuration required for secure databases)
 
 ## Setup and Run
 ```
