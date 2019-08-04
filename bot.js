@@ -416,12 +416,12 @@ client.on('message', async msg => {
                     msg.reply("The server prefix is currently: " + await store.get(msg.member.guild.id))
                 }
                 else {
-                    if(msg.member.hasPermission("MANAGE_GUILD")){
+                    if(msg.member.hasPermission("BAN_MEMBERS")){
                         await store.set(msg.member.guild.id, argument[0])
                         msg.reply("The server prefix is now: " + await store.get(msg.member.guild.id))
                     }
                     else {
-                        msg.reply("You don't have the **MANAGE SERVER** permission!")
+                        msg.reply("You don't have the **BAN MEMBERS** permission!")
                     }
                 }
                 break
