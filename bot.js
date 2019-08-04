@@ -9,6 +9,7 @@ const keyv = require('keyv')
 
 const token = require("./token.json") // BOT TOKEN
 const mongoconf = require("./mongo.json") // MONGODB CONFIGURATION
+const prefconf = require("./config.json") // DEFAULT PREFIX
 
 const store = new keyv('mongodb://' + mongoconf.hostname + ':' + mongoconf.port + '/' + mongoconf.database )
 
@@ -64,7 +65,7 @@ const wolfPhrases = [
     "Wow! A wolf!"
 ]
 
-let defaultPrefix = "!" // Relies on bot always being active
+let defaultPrefix = prefconf.defaultPrefix
 
 let voiceActive = {}
 
