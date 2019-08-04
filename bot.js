@@ -416,6 +416,32 @@ client.on('message', async msg => {
                 }
                 break
             //#endregion
+
+            //#region Info
+            case "info":
+                var infoEmbed = new Discord.RichEmbed()
+                if(argument[0] == undefined) {
+                    infoEmbed.setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.avatarURL)
+                    .setTitle(`User Id: ${msg.author.id}`)
+                    .addField("Account Created", msg.author.createdAt)
+                    .addField("User Joined", msg.member.joinedAt)
+                    .addField("Roles", msg.member.roles.map(z => z).join(", "))
+                    .setColor(msg.member.colorRole.hexColor)
+                    msg.channel.send(infoEmbed)
+                }
+                else if (msg.mentions.users.first()){
+                    var mentionedUser = msg.mentions.users.first()
+                    var mentionedMember = msg.guild.member(mentionedUser)
+                    infoEmbed.setAuthor(`${mentionedUser.username}#${mentionedUser.discriminator}`, mentionedUser.avatarURL)
+                    .setTitle(`User Id: ${mentionedUser.id}`)
+                    .addField("Account Created", mentionedUser.createdAt)
+                    .addField("User Joined", mentionedMember.joinedAt)
+                    .addField("Roles", mentionedMember.roles.map(z => z).join(", "))
+                    .setColor(mentionedMember.colorRole.hexColor)
+                    msg.channel.send(infoEmbed)
+                }
+                else { msg.reply("Invalid Member") }
+            //#endregion
         }
     }
     else {
