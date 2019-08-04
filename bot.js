@@ -7,7 +7,7 @@ const youtube = require('ytdl-core')
 const request = require('request')
 const keyv = require('keyv')
 
-const store = new keyv()
+const store = new keyv('mongodb://localhost:27017/local')
 store.on('error', err => console.error('Keyv connection error:', err));
 const token = require("./token.json") // BOT TOKEN
 
@@ -74,12 +74,12 @@ client.on('ready', async () => {
     client.user.setActivity("foxes in " + client.guilds.size + " guilds", { type: 'LISTENING' })
     client.guilds.tap( async guild => {
         voiceActive[guild.id] = false
-        await store.set(guild.id, defaultPrefix)
     }) 
 })
 
-client.on('guildCreate', guild => {
-    guildPrefixes[guild.id] = defaultPrefix
+client.on('guildCreate', async guild => {
+    voiceActive[guild.id] = false
+    await store.set(guild.id, defaultPrefix)
 })
 
 client.on('message', async msg => {
@@ -92,8 +92,8 @@ client.on('message', async msg => {
         || reaction.emoji.name === "⏸" && user.id === msg.author.id
 
     if (msg.guild) {
-        if (msg.content.indexOf(prefix) !== 0 ) return 
         var prefix = await store.get(msg.member.guild.id)
+        if (msg.content.indexOf(prefix) !== 0 ) return 
         const argument = msg.content.slice(prefix.length).trim().split(/ +/g)
         const command = argument.shift().toLowerCase()
         switch(command)
