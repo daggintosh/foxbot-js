@@ -141,7 +141,7 @@ client.on('message', async msg => {
                         .setImage(body.link)
                         .setFooter(Date())
                         msg.channel.send(foxEmbed)
-                        .then(msg => {
+                        .then(async msg => {
                             msg.createReactionCollector(filter , { time: 60000 })
                             .on('collect', reaction => {
                                 switch(reaction.emoji.name)
@@ -155,10 +155,8 @@ client.on('message', async msg => {
                                         break
                                 }
                             })
-                            msg.react("➡")
-                            .then(z =>{
-                                msg.react("⏹")
-                            })
+                            await msg.react("➡")
+                            await msg.react("⏹")
                         })
                     }) 
                 }
@@ -178,7 +176,7 @@ client.on('message', async msg => {
                         .setImage(body.file)
                         .setFooter(Date())
                         msg.channel.send(catEmbed)
-                        .then(msg => {
+                        .then(async msg => {
                             msg.createReactionCollector(filter , { time: 60000 })
                             .on('collect', reaction => {
                                 switch(reaction.emoji.name)
@@ -192,10 +190,8 @@ client.on('message', async msg => {
                                         break
                                 }
                             })
-                            msg.react("➡")
-                            .then(z =>{
-                                msg.react("⏹")
-                            })
+                            await msg.react("➡")
+                            await msg.react("⏹")
                         })
                     })
                 }
@@ -215,7 +211,7 @@ client.on('message', async msg => {
                         .setImage(body.link)
                         .setFooter(Date())
                         msg.channel.send(wolfEmbed)
-                        .then(msg => {
+                        .then(async msg => {
                             msg.createReactionCollector(filter , { time: 60000 })
                             .on('collect', reaction => {
                                 switch(reaction.emoji.name)
@@ -229,10 +225,8 @@ client.on('message', async msg => {
                                         break
                                 }
                             })
-                            msg.react("➡")
-                            .then(z =>{
-                                msg.react("⏹")
-                            })
+                            await msg.react("➡")
+                            await msg.react("⏹")
                         })
                     })
                 }
@@ -252,7 +246,7 @@ client.on('message', async msg => {
                         .setImage(body.message)
                         .setFooter(Date())
                         msg.channel.send(dogEmbed)
-                        .then(msg => {
+                        .then(async msg => {
                             msg.createReactionCollector(filter , { time: 60000 })
                             .on('collect', reaction => {
                                 switch(reaction.emoji.name)
@@ -266,10 +260,8 @@ client.on('message', async msg => {
                                         break
                                 }
                             })
-                            msg.react("➡")
-                            .then(z =>{
-                                msg.react("⏹")
-                            })
+                            await msg.react("➡")
+                            await msg.react("⏹")
                         })
                     })
                 }
@@ -362,7 +354,7 @@ client.on('message', async msg => {
                                 .setURL(info.video_url)
                                 .setColor("#ff1100")
                                 msg.channel.send(ytEmbed)
-                                .then(msg => {
+                                .then(async msg => {
                                     dispatch.on('end', z => { 
                                         if (repeat === true) {
                                             voiceActive[msg.member.guild.id] = false,
@@ -395,16 +387,10 @@ client.on('message', async msg => {
                                                 break
                                         }
                                     })
-                                    msg.react("▶")
-                                    .then(z=>{
-                                        msg.react("⏸")
-                                        .then(z=>{
-                                            msg.react("⏹")
-                                            .then(z=>{
-                                                msg.react("🔁")
-                                            })
-                                        })
-                                    })
+                                    await msg.react("▶")
+                                    await msg.react("⏸")
+                                    await msg.react("⏹")
+                                    await msg.react("🔁")
                                 })
                             })
                         })
