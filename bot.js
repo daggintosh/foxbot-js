@@ -71,7 +71,7 @@ let voiceActive = {}
 client.login(token.token)
 
 client.on('ready', async () => {
-    console.log('Ready!')
+    console.log('Ready! Logged in as ' + client.user.username + '#' + client.user.discriminator)
     client.user.setActivity("foxes in " + client.guilds.size + " guilds", { type: 'LISTENING' })
     client.guilds.tap( async guild => {
         voiceActive[guild.id] = false
@@ -84,13 +84,17 @@ client.on('ready', async () => {
 })
 
 client.on('guildCreate', async guild => {
+    console.log("The bot has joined " + guild.name)
     voiceActive[guild.id] = false
     await store.set(guild.id, defaultPrefix)
 })
 
 client.on('guildDelete', async guild => {
+    console.log("The bot has left " + guild.name)
     await store.delete(guild.id)
 })
+
+client.on('disconnect', () => console.error("The bot has lost connection to the API, you may have lost connection to the internet or the API is having issues."))
 
 client.on('message', async msg => {
     if(msg.author.bot) return
