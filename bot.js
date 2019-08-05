@@ -118,6 +118,7 @@ client.on('message', async msg => {
             //#region about
             case "about":
                 request("https://dagg.xyz/randomfox/", { json: true } , (error, response, body) => {
+                    let aboutDate = new Date()
                     let aboutEmbed = new Discord.RichEmbed()
                     .setColor(randomcolour())
                     .setThumbnail(body.link)
@@ -125,7 +126,7 @@ client.on('message', async msg => {
                     .setURL("https://github.com/dagg-1/foxbot-js")
                     .setDescription("**Hello!**")
                     .setAuthor("FoxBot", "https://cdn.discordapp.com/avatars/601967284394917900/f25955e890f89f1015762647f82ea555.webp")
-                    .setFooter(Date())
+                    .setFooter(aboutDate.toUTCString())
                     msg.channel.send(aboutEmbed)
                 })
                 break
@@ -137,12 +138,13 @@ client.on('message', async msg => {
                 function fox()
                 {
                     request("https://dagg.xyz/randomfox/", { json: true } , (error, response, body) => { 
+                        let foxDate = new Date()
                         let foxEmbed = new Discord.RichEmbed()      
                         .setColor(randomcolour())
                         .setTitle(foxPhrases[Math.floor(Math.random()*foxPhrases.length)])
                         .setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.avatarURL)
                         .setImage(body.link)
-                        .setFooter(Date())
+                        .setFooter(foxDate.toUTCString())
                         msg.channel.send(foxEmbed)
                         .then(async msg => {
                             msg.createReactionCollector(filter , { time: 60000 })
@@ -171,13 +173,14 @@ client.on('message', async msg => {
                 cat()
                 function cat()
                 {
-                    request('http://aws.random.cat/meow', { json: true } , (error, response, body) => {   
+                    request('http://aws.random.cat/meow', { json: true } , (error, response, body) => {
+                        let catDate = new Date() 
                         let catEmbed = new Discord.RichEmbed()      
                         .setColor(randomcolour())
                         .setTitle(catPhrases[Math.floor(Math.random()*catPhrases.length)])
                         .setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.avatarURL)
                         .setImage(body.file)
-                        .setFooter(Date())
+                        .setFooter(catDate.toUTCString())
                         msg.channel.send(catEmbed)
                         .then(async msg => {
                             msg.createReactionCollector(filter , { time: 60000 })
@@ -207,12 +210,13 @@ client.on('message', async msg => {
                 function wolf()
                 {
                     request("https://dagg.xyz/randomwolf/", { json: true } , (error, response, body) => { 
+                        let wolfDate = new Date()
                         let wolfEmbed = new Discord.RichEmbed()      
                         .setColor(randomcolour())
                         .setTitle(wolfPhrases[Math.floor(Math.random()*foxPhrases.length)])
                         .setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.avatarURL)
                         .setImage(body.link)
-                        .setFooter(Date())
+                        .setFooter(wolfDate.toUTCString())
                         msg.channel.send(wolfEmbed)
                         .then(async msg => {
                             msg.createReactionCollector(filter , { time: 60000 })
@@ -242,12 +246,13 @@ client.on('message', async msg => {
                 function dog()
                 {
                     request('https://dog.ceo/api/breeds/image/random', { json: true} , (error, response, body) => { 
+                        let dogDate = new Date()
                         let dogEmbed = new Discord.RichEmbed()
                         .setColor(randomcolour())
                         .setTitle(dogPhrases[Math.floor(Math.random()*dogPhrases.length)])
                         .setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.avatarURL)
                         .setImage(body.message)
-                        .setFooter(Date())
+                        .setFooter(dogDate.toUTCString())
                         msg.channel.send(dogEmbed)
                         .then(async msg => {
                             msg.createReactionCollector(filter , { time: 60000 })
@@ -273,10 +278,11 @@ client.on('message', async msg => {
 
             //#region time
             case "time":
+                let timeDate = new Date()
                 let timeEmbed = new Discord.RichEmbed()
                 .setColor(randomcolour())
                 .setDescription("**It's time to go to bed, you dolt.**")
-                .setFooter(Date())
+                .setFooter(timeDate.toUTCString())
                 .setAuthor(msg.author.username, msg.author.avatarURL)
                 msg.channel.send(timeEmbed)
                 break
@@ -284,6 +290,7 @@ client.on('message', async msg => {
 
             //#region ping
             case "ping":
+                let pingDate = new Date()
                 var pingMil = client.ping
                 var pingColour = 0
                 if(pingMil >= 200)
@@ -301,7 +308,7 @@ client.on('message', async msg => {
                 let pingEmbed = new Discord.RichEmbed()
                 .setColor(pingColour)
                 .setDescription("Ping: " + "**" + Math.floor(pingMil) + "** ms")
-                .setFooter(Date())
+                .setFooter(pingDate.toUTCString())
                 .setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.avatarURL)
                 msg.channel.send(pingEmbed)
                 break
@@ -310,6 +317,7 @@ client.on('message', async msg => {
             //#region help
             case "help":
                 request("https://dagg.xyz/randomfox/", { json: true } , (error, response, body) => {
+                    let helpDate = new Date()
                     let helpEmbed = new Discord.RichEmbed()
                     .setColor(randomcolour())
                     .addField(prefix + "help", "Displays this screen", true)
@@ -323,7 +331,9 @@ client.on('message', async msg => {
                     .addField(prefix + "play [YouTube URL]", "Plays a song", true)
                     .addField(prefix + "prefix [Prefix]", "Sets server prefix", true)
                     .addField(prefix + "info [User Mention]", "Gathers basic info of a user", true)
-                    .setFooter(Date())
+                    .addField(prefix + "kick [User Mention]", "Kicks a user from the guild", true)
+                    .addField(prefix + "ban [User Mention]", "Bans a user from the guild", true)
+                    .setFooter(helpDate.toUTCString())
                     .setAuthor("FoxBot", "https://cdn.discordapp.com/avatars/601967284394917900/f25955e890f89f1015762647f82ea555.webp")
                     .setThumbnail(body.link)
                     msg.channel.send(helpEmbed)
@@ -423,13 +433,15 @@ client.on('message', async msg => {
 
             //#region info
             case "info":
-                var infoEmbed = new Discord.RichEmbed()
+                let infoDate = new Date()
+                let infoEmbed = new Discord.RichEmbed()
+                .setFooter(infoDate.toUTCString())
                 if(argument[0] == undefined) {
                     infoEmbed.setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.avatarURL)
                     .setTitle(`User Id: ${msg.author.id}`)
-                    .addField("Account Created", msg.author.createdAt)
-                    .addField("User Joined", msg.member.joinedAt)
-                    .addField("Roles", msg.member.roles.map(z => z).join(", "))
+                    .addField("Account Created", msg.author.createdAt.toUTCString(), true)
+                    .addField("User Joined", msg.member.joinedAt.toUTCString(), true)
+                    .addField("Roles", msg.member.roles.map(z => z).join(", "), true)
                     .setColor(msg.member.colorRole.hexColor)
                     msg.channel.send(infoEmbed)
                 }
@@ -438,13 +450,93 @@ client.on('message', async msg => {
                     var mentionedMember = msg.guild.member(mentionedUser)
                     infoEmbed.setAuthor(`${mentionedUser.username}#${mentionedUser.discriminator}`, mentionedUser.avatarURL)
                     .setTitle(`User Id: ${mentionedUser.id}`)
-                    .addField("Account Created", mentionedUser.createdAt)
-                    .addField("User Joined", mentionedMember.joinedAt)
+                    .addField("Account Created", mentionedUser.createdAt.toUTCString())
+                    .addField("User Joined", mentionedMember.joinedAt.toUTCString())
                     .addField("Roles", mentionedMember.roles.map(z => z).join(", "))
                     .setColor(mentionedMember.colorRole.hexColor)
                     msg.channel.send(infoEmbed)
                 }
                 else { msg.reply("Invalid Member") }
+                break
+            //#endregion
+
+            //#region kick
+            case "kick":
+                let kickDate = new Date()
+                var kickEmbed = new Discord.RichEmbed()
+                .setFooter(kickDate.toUTCString())
+                if(msg.member.guild.me.hasPermission("KICK_MEMBERS") == false)
+                {
+                    msg.reply("I do not have permissions to kick users.")
+                    return
+                }
+                if(msg.member.hasPermission("KICK_MEMBERS") == false) {
+                    msg.reply("You do not have permissions to kick users.")
+                    return
+                }
+                else if (argument[0] == undefined) {
+                    msg.reply("You did not mention a user!")
+                    return
+                }
+                else if (msg.mentions.users.first()){
+                    var mentionedUser = msg.mentions.users.first()
+                    var mentionedMember = msg.guild.member(mentionedUser)
+                    if (mentionedMember.id == client.user.id) {
+                        msg.reply("I cannot kick myself!")
+                        return
+                    }
+                    if (mentionedMember.kickable == false) {
+                        msg.reply("This user has a kick shield.")
+                    }
+                    await mentionedMember.kick(argument[1])
+                    kickEmbed.setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.avatarURL)
+                    .setTitle(`User Id: ${mentionedUser.id}`)
+                    .addField("User Kicked", `${mentionedUser.username}#${mentionedUser.discriminator}`)
+                    .setColor("#FFFF00")
+                    msg.channel.send(kickEmbed)
+                }
+                else { msg.reply("Invalid Member") }
+                break
+            //#endregion
+
+            //#region ban
+            case "ban":
+                let banDate = new Date()
+                var banEmbed = new Discord.RichEmbed()
+                .setFooter(banDate.toUTCString())
+                if(msg.member.guild.me.hasPermission("BAN_MEMBERS") == false)
+                {
+                    msg.reply("I do not have permissions to ban users.")
+                    return
+                }
+                if(msg.member.hasPermission("BAN_MEMBERS") == false) {
+                    msg.reply("You do not have permissions to ban users.")
+                    return
+                }
+                else if (argument[0] == undefined) {
+                    msg.reply("You did not mention a user!")
+                    return
+                }
+                else if (msg.mentions.users.first()){
+                    var mentionedUser = msg.mentions.users.first()
+                    var mentionedMember = msg.guild.member(mentionedUser)
+                    if (mentionedMember.id == client.user.id) {
+                        msg.reply("I cannot ban myself!")
+                        return
+                    }
+                    if (mentionedMember.bannable == false) {
+                        msg.reply("This user is immune to the ban hammer.")
+                        return
+                    }
+                    await mentionedMember.ban(argument[1])
+                    banEmbed.setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.avatarURL)
+                    .setTitle(`User Id: ${mentionedUser.id}`)
+                    .addField("User Banned", `${mentionedUser.username}#${mentionedUser.discriminator}`)
+                    .setColor("#FF0000")
+                    msg.channel.send(banEmbed)
+                }
+                else { msg.reply("Invalid Member") }
+                break
             //#endregion
         }
     }
