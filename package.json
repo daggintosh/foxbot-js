@@ -19,6 +19,7 @@
     "opusscript": "0.0.6",
     "randomcolor": "^0.5.4",
     "request": "^2.88.0",
+    "youtube-api-v3-search": "^1.2.1",
     "ytdl-core": "^0.29.3"
   }
 }

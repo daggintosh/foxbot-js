@@ -6,12 +6,14 @@ const randomcolour = require('randomcolor')
 const youtube = require('ytdl-core')
 const request = require('request')
 const keyv = require('keyv')
+const ytsearch = require('youtube-api-v3-search')
 
 const token = require("./token.json") // BOT TOKEN
 const mongoconf = require("./mongo.json") // MONGODB CONFIGURATION
 const prefconf = require("./config.json") // DEFAULT PREFIX
 
 const store = new keyv(`mongodb://${mongoconf.hostname}:${mongoconf.port}/${mongoconf.database}`)
+const apitoken = token.apikey
 
 const foxPhrases = [
     "A fox appears!", 
@@ -328,7 +330,7 @@ client.on('message', async msg => {
                     .addField(prefix + "cat", "Post a random cat", true)
                     .addField(prefix + "dog", "Post a random dog", true)
                     .addField(prefix + "wolf", "Post a random wolf", true)
-                    .addField(prefix + "play [YouTube URL]", "Plays a song", true)
+                    .addField(prefix + "play [Search Term or YouTube URL]", "Plays a song", true)
                     .addField(prefix + "prefix [Prefix]", "Sets server prefix", true)
                     .addField(prefix + "info [User Mention]", "Gathers basic info of a user", true)
                     .addField(prefix + "kick [User Mention]", "Kicks a user from the guild", true)
@@ -409,7 +411,14 @@ client.on('message', async msg => {
                             })
                         })
                     }
-                    else { msg.reply("Invalid URL")}
+                    else {
+                        let searchTerm = JSON.stringify(argument)
+                        let filteredTerm = searchTerm.replace(/"|,|]|\[/gi, " ")
+                        ytsearch(apitoken, { q:`${filteredTerm}` }, (error, result) => {
+                            argument[0] = `https://youtu.be/${result.items[0].id.videoId}`
+                            play()
+                        })
+                    }
                 }
                 break
             //#endregion
