@@ -414,7 +414,7 @@ client.on('message', async msg => {
                     else {
                         let searchTerm = JSON.stringify(argument)
                         let filteredTerm = searchTerm.replace(/"|,|]|\[/gi, " ")
-                        ytsearch(apitoken, { q:`${filteredTerm}` }, (error, result) => {
+                        ytsearch(apitoken, { q:`${filteredTerm}`, part: "snippet", type: "video,playlist"}, (error, result) => {
                             if (result == undefined) { msg.reply("I've got nothing!"); return }
                             argument[0] = `https://youtu.be/${result.items[0].id.videoId}`
                             play()
