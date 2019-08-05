@@ -397,6 +397,7 @@ client.on('message', async msg => {
                                                 break
                                             case "⏸":
                                                 dispatch.pause()
+                                                msg.reactions()
                                                 break
                                             case "▶":
                                                 dispatch.resume()
@@ -548,6 +549,13 @@ client.on('message', async msg => {
                     msg.channel.send(banEmbed)
                 }
                 else { msg.reply("Invalid Member") }
+                break
+            //#endregion
+
+            //#region reset
+            case "reset":
+                if(msg.member.hasPermission("MANAGE_MESSAGES")) { voiceActive = false}
+                else { msg.reply("You do not have the ability to manage messages.") }
                 break
             //#endregion
         }
