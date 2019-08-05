@@ -448,6 +448,7 @@ client.on('message', async msg => {
                 .setFooter(infoDate.toUTCString())
                 if(argument[0] == undefined) {
                     infoEmbed.setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.avatarURL)
+                    .setThumbnail(msg.author.avatarURL)
                     .setTitle(`User Id: ${msg.author.id}`)
                     .addField("Account Created", msg.author.createdAt.toUTCString(), true)
                     .addField("User Joined", msg.member.joinedAt.toUTCString(), true)
@@ -459,6 +460,7 @@ client.on('message', async msg => {
                     var mentionedUser = msg.mentions.users.first()
                     var mentionedMember = msg.guild.member(mentionedUser)
                     infoEmbed.setAuthor(`${mentionedUser.username}#${mentionedUser.discriminator}`, mentionedUser.avatarURL)
+                    .setThumbnail(mentionedUser.avatarURL)
                     .setTitle(`User Id: ${mentionedUser.id}`)
                     .addField("Account Created", mentionedUser.createdAt.toUTCString())
                     .addField("User Joined", mentionedMember.joinedAt.toUTCString())
