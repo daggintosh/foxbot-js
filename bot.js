@@ -15,57 +15,19 @@ const prefconf = require("./config.json") // DEFAULT PREFIX
 const store = new keyv(`mongodb://${mongoconf.hostname}:${mongoconf.port}/${mongoconf.database}`)
 const apitoken = token.apikey
 
-const foxPhrases = [
-    "A fox appears!", 
-    "A fox is here!", 
-    "Theres a fox here!", 
-    "A fox has manifested!",
-    "A fox has taken hold!",
-    "There's a fox in my boot!",
-    "A wild fox has appeared!",
-    "A fox challenges you!",
-    "You see a fox!",
-    "Wow! A fox!"
+const phrases = [
+    "A animal appears!", 
+    "A animal is here!", 
+    "Theres a animal here!", 
+    "A animal has manifested!",
+    "A animal has taken hold!",
+    "There's a animal in my boot!",
+    "A wild animal has appeared!",
+    "A animal challenges you!",
+    "You see a animal!",
+    "Wow! A animal!"
 ]
-
-const catPhrases = [
-    "A cat appears!", 
-    "A cat is here!", 
-    "Theres a cat here!", 
-    "A cat has manifested!",
-    "A cat has taken hold!",
-    "There's a cat in my boot!",
-    "A wild cat has appeared!",
-    "A cat challenges you!",
-    "You see a cat!",
-    "Wow! A cat!"
-]
-
-const dogPhrases = [
-    "A dog appears!", 
-    "A dog is here!", 
-    "Theres a dog here!", 
-    "A dog has manifested!",
-    "A dog has taken hold!",
-    "There's a dog in my boot!",
-    "A wild dog has appeared!",
-    "A dog challenges you!",
-    "You see a dog!",
-    "Wow! A dog!"
-]
-
-const wolfPhrases = [
-    "A wolf appears!", 
-    "A wolf is here!", 
-    "Theres a wolf here!", 
-    "A wolf has manifested!",
-    "A wolf has taken hold!",
-    "There's a wolf in my boot!",
-    "A wild wolf has appeared!",
-    "A wolf challenges you!",
-    "You see a wolf!",
-    "Wow! A wolf!"
-]
+const animal = /animal/gi
 
 let defaultPrefix = prefconf.defaultPrefix
 
@@ -152,7 +114,7 @@ client.on('message', async msg => {
                     let foxDate = new Date()
                     let foxEmbed = new Discord.RichEmbed()      
                     .setColor(randomcolour())
-                    .setTitle(foxPhrases[Math.floor(Math.random()*foxPhrases.length)])
+                    .setTitle(phrases[Math.floor(Math.random()*phrases.length)].replace(animal, "fox"))
                     .setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.avatarURL)
                     .setImage(foxImage)
                     .setFooter(foxDate.toUTCString())
@@ -197,7 +159,7 @@ client.on('message', async msg => {
                     let catDate = new Date() 
                     let catEmbed = new Discord.RichEmbed()      
                     .setColor(randomcolour())
-                    .setTitle(catPhrases[Math.floor(Math.random()*catPhrases.length)])
+                    .setTitle(phrases[Math.floor(Math.random()*phrases.length)].replace(animal, "cat"))
                     .setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.avatarURL)
                     .setImage(catImage)
                     .setFooter(catDate.toUTCString())
@@ -242,7 +204,7 @@ client.on('message', async msg => {
                     let wolfDate = new Date()
                     let wolfEmbed = new Discord.RichEmbed()      
                     .setColor(randomcolour())
-                    .setTitle(wolfPhrases[Math.floor(Math.random()*wolfPhrases.length)])
+                    .setTitle(phrases[Math.floor(Math.random()*phrases.length)].replace(animal, "wolf"))
                     .setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.avatarURL)
                     .setImage(wolfImage)
                     .setFooter(wolfDate.toUTCString())
@@ -287,7 +249,7 @@ client.on('message', async msg => {
                     let dogDate = new Date() 
                     let dogEmbed = new Discord.RichEmbed()      
                     .setColor(randomcolour())
-                    .setTitle(dogPhrases[Math.floor(Math.random()*dogPhrases.length)])
+                    .setTitle(phrases[Math.floor(Math.random()*phrases.length)].replace(animal, "dog"))
                     .setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.avatarURL)
                     .setImage(dogImage)
                     .setFooter(dogDate.toUTCString())
