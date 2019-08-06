@@ -148,6 +148,7 @@ client.on('message', async msg => {
                 }
                 function postFox()
                 {
+                    requestFox(z => {})
                     let foxDate = new Date()
                     let foxEmbed = new Discord.RichEmbed()      
                     .setColor(randomcolour())
@@ -192,6 +193,7 @@ client.on('message', async msg => {
                 }
                 function postCat()
                 {
+                    requestCat(z => {})
                     let catDate = new Date() 
                     let catEmbed = new Discord.RichEmbed()      
                     .setColor(randomcolour())
@@ -225,35 +227,44 @@ client.on('message', async msg => {
 
             //#region wolf
             case "wolf":
-                wolf()
-                function wolf()
+                let wolfImage
+                requestWolf(z => postWolf())
+                function requestWolf(callback)
                 {
-                    request("https://dagg.xyz/randomwolf/", { json: true } , (error, response, body) => { 
-                        let wolfDate = new Date()
-                        let wolfEmbed = new Discord.RichEmbed()      
-                        .setColor(randomcolour())
-                        .setTitle(wolfPhrases[Math.floor(Math.random()*foxPhrases.length)])
-                        .setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.avatarURL)
-                        .setImage(body.link)
-                        .setFooter(wolfDate.toUTCString())
-                        msg.channel.send(wolfEmbed)
-                        .then(async msg => {
-                            msg.createReactionCollector(filter , { time: 60000 })
-                            .on('collect', reaction => {
-                                switch(reaction.emoji.name)
-                                {
-                                    case "➡":
-                                        msg.delete()
-                                        wolf()
-                                        break
-                                    case "⏹":
-                                        msg.delete()
-                                        break
-                                }
-                            })
+                    request("https://dagg.xyz/randomwolf/", { json: true } , (error, response, body) => {
+                        wolfImage = body.link
+                        callback()
+                    })
+                }
+                function postWolf()
+                {
+                    requestWolf(z => {})
+                    let wolfDate = new Date()
+                    let wolfEmbed = new Discord.RichEmbed()      
+                    .setColor(randomcolour())
+                    .setTitle(wolfPhrases[Math.floor(Math.random()*wolfPhrases.length)])
+                    .setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.avatarURL)
+                    .setImage(wolfImage)
+                    .setFooter(wolfDate.toUTCString())
+                    msg.channel.send(wolfEmbed)
+                    .then(async msg => {
+                        msg.createReactionCollector(filter , { time: null })
+                        .on('collect', reaction => {
+                            switch(reaction.emoji.name)
+                            {
+                                case "➡":
+                                    requestWolf(z => {})
+                                    wolfEmbed.setImage(wolfImage)
+                                    reaction.remove(author)
+                                    msg.edit(wolfEmbed)
+                                    break
+                                case "⏹":
+                                    msg.delete()
+                                    break
+                            }
+                        })
                             await msg.react("➡")
                             await msg.react("⏹")
-                        })
                     })
                 }
                 break
@@ -261,35 +272,44 @@ client.on('message', async msg => {
             
             //#region dog
             case "dog":
-                dog()
-                function dog()
+                let dogImage
+                requestDog(z => postDog())
+                function requestDog(callback)
                 {
-                    request('https://dog.ceo/api/breeds/image/random', { json: true} , (error, response, body) => { 
-                        let dogDate = new Date()
-                        let dogEmbed = new Discord.RichEmbed()
-                        .setColor(randomcolour())
-                        .setTitle(dogPhrases[Math.floor(Math.random()*dogPhrases.length)])
-                        .setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.avatarURL)
-                        .setImage(body.message)
-                        .setFooter(dogDate.toUTCString())
-                        msg.channel.send(dogEmbed)
-                        .then(async msg => {
-                            msg.createReactionCollector(filter , { time: 60000 })
-                            .on('collect', reaction => {
-                                switch(reaction.emoji.name)
-                                {
-                                    case "➡":
-                                        msg.delete()
-                                        dog()
-                                        break
-                                    case "⏹":
-                                        msg.delete()
-                                        break
-                                }
-                            })
+                    request("https://dog.ceo/api/breeds/image/random", { json: true } , (error, response, body) => {
+                        dogImage = body.message
+                        callback()
+                    })
+                }
+                function postDog()
+                {
+                    requestDog(z => {})
+                    let dogDate = new Date() 
+                    let dogEmbed = new Discord.RichEmbed()      
+                    .setColor(randomcolour())
+                    .setTitle(dogPhrases[Math.floor(Math.random()*dogPhrases.length)])
+                    .setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.avatarURL)
+                    .setImage(dogImage)
+                    .setFooter(dogDate.toUTCString())
+                    msg.channel.send(dogEmbed)
+                    .then(async msg => {
+                        msg.createReactionCollector(filter , { time: null })
+                        .on('collect', reaction => {
+                            switch(reaction.emoji.name)
+                            {
+                                case "➡":
+                                    requestDog(z => {})
+                                    dogEmbed.setImage(dogImage)
+                                    reaction.remove(author)
+                                    msg.edit(dogEmbed)
+                                    break
+                                case "⏹":
+                                    msg.delete()
+                                    break
+                            }
+                        })
                             await msg.react("➡")
                             await msg.react("⏹")
-                        })
                     })
                 }
                 break
