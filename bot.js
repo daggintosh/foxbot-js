@@ -44,7 +44,6 @@ client.on('ready', async () => {
         if (guildexists == undefined)
         {
             await store.set(guild.id, defaultPrefix)
-            console.log(await store.get(guild.id))
         }
     })
 })
