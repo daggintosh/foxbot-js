@@ -458,20 +458,25 @@ client.on('message', async msg => {
 
             //#region info
             case "info":
+                let rolecolor
                 let infoDate = new Date()
                 let infoEmbed = new Discord.RichEmbed()
                 .setFooter(infoDate.toUTCString())
                 if(argument[0] == undefined) {
+                    if(msg.member.colorRole == undefined) rolecolor = "#b5b5b5"
+                    else rolecolor = msg.member.colorRole.color
                     infoEmbed.setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.avatarURL)
                     .setThumbnail(msg.author.avatarURL)
                     .setTitle(`User Id: ${msg.author.id}`)
                     .addField("Account Created", msg.author.createdAt.toUTCString(), true)
                     .addField("User Joined", msg.member.joinedAt.toUTCString(), true)
                     .addField("Roles", msg.member.roles.map(z => z).join(", "), true)
-                    .setColor(msg.member.colorRole.hexColor)
+                    .setColor(rolecolor)
                     msg.channel.send(infoEmbed)
                 }
                 else if (msg.mentions.users.first()){
+                    if(msg.member.colorRole == undefined) rolecolor = "#b5b5b5"
+                    else rolecolor = mentionedMember.colorRole.color
                     var mentionedUser = msg.mentions.users.first()
                     var mentionedMember = msg.guild.member(mentionedUser)
                     infoEmbed.setAuthor(`${mentionedUser.username}#${mentionedUser.discriminator}`, mentionedUser.avatarURL)
@@ -480,7 +485,7 @@ client.on('message', async msg => {
                     .addField("Account Created", mentionedUser.createdAt.toUTCString())
                     .addField("User Joined", mentionedMember.joinedAt.toUTCString())
                     .addField("Roles", mentionedMember.roles.map(z => z).join(", "))
-                    .setColor(mentionedMember.colorRole.hexColor)
+                    .setColor(rolecolor)
                     msg.channel.send(infoEmbed)
                 }
                 else { msg.reply("Invalid Member") }
