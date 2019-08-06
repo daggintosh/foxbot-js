@@ -107,8 +107,7 @@ client.on('message', async msg => {
         reaction.emoji.name === "➡" && user.id === msg.author.id 
         || reaction.emoji.name === "⏹" && user.id === msg.author.id 
         || reaction.emoji.name === "🔁" && user.id === msg.author.id
-        || reaction.emoji.name === "▶" && user.id === msg.author.id
-        || reaction.emoji.name === "⏸" && user.id === msg.author.id
+        || reaction.emoji.name === "⏯" && user.id === msg.author.id
 
     if (msg.guild) {
         var prefix = await store.get(msg.member.guild.id)
@@ -335,6 +334,7 @@ client.on('message', async msg => {
                     .addField(prefix + "info [User Mention]", "Gathers basic info of a user", true)
                     .addField(prefix + "kick [User Mention]", "Kicks a user from the guild", true)
                     .addField(prefix + "ban [User Mention]", "Bans a user from the guild", true)
+                    .addField(prefix + "reset", "Resets the music bot in case of user or bot error", true)
                     .setFooter(helpDate.toUTCString())
                     .setAuthor("FoxBot", "https://cdn.discordapp.com/avatars/601967284394917900/f25955e890f89f1015762647f82ea555.webp")
                     .setThumbnail(body.link)
@@ -345,6 +345,9 @@ client.on('message', async msg => {
 
             //#region play
             case "play":
+                let repeat = "OFF"
+                let author = msg.author.id 
+                if (msg.member.guild.me.hasPermission("MANAGE_MESSAGES") == false) { return msg.reply("I cannot modify messages! (Required for interactivity)") }
                 play()
                 function play() {
                     if (argument[0] == undefined){ msg.reply ("Do you want me to just scream?") }
@@ -355,15 +358,15 @@ client.on('message', async msg => {
                         let url = argument[0]
                         let video = youtube(url)
                         youtube.getInfo(url, (error, info) => {
+                            let playPauseToggler = "play"
                             voiceChannel.join()
                             .then(connection => {
-                                let repeat = false
                                 voiceActive[msg.member.guild.id] = true
                                 let dispatch = connection.playStream(video)
                                 dispatch.setVolume(0.5)
                                 let ytEmbed = new Discord.RichEmbed()
                                 .setAuthor(info.author.name, info.author.avatar)
-                                .setFooter(info.player_response.videoDetails.viewCount.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + " views")
+                                .setFooter(info.player_response.videoDetails.viewCount.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + ` views | Repeat: ${repeat}`)
                                 .addField("Now Playing", info.player_response.videoDetails.title)
                                 .setThumbnail(info.player_response.videoDetails.thumbnail.thumbnails[0].url)
                                 .setTitle(info.video_url)
@@ -372,7 +375,7 @@ client.on('message', async msg => {
                                 msg.channel.send(ytEmbed)
                                 .then(async msg => {
                                     dispatch.on('end', z => { 
-                                        if (repeat === true) {
+                                        if (repeat === "ON") {
                                             voiceActive[msg.member.guild.id] = false,
                                             msg.delete(),
                                             play()
@@ -389,23 +392,36 @@ client.on('message', async msg => {
                                         switch(reaction.emoji.name)
                                         {
                                             case "⏹":
-                                                repeat = false
+                                                repeat = "OFF"
                                                 voiceChannel.leave()
                                                 break
                                             case "🔁":
-                                                repeat = true
+                                                reaction.remove(author)
+                                                if(repeat === "OFF") {
+                                                    repeat = "ON"
+                                                    ytEmbed.setFooter(info.player_response.videoDetails.viewCount.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + ` views | Repeat: ${repeat}`)
+                                                    msg.edit(ytEmbed)
+                                                }
+                                                else {
+                                                    repeat = "OFF"
+                                                    ytEmbed.setFooter(info.player_response.videoDetails.viewCount.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + ` views | Repeat: ${repeat}`)
+                                                    msg.edit(ytEmbed)
+                                                }
                                                 break
-                                            case "⏸":
-                                                dispatch.pause()
-                                                msg.reactions()
-                                                break
-                                            case "▶":
-                                                dispatch.resume()
+                                            case "⏯":
+                                                reaction.remove(author)
+                                                if(playPauseToggler === "play") {
+                                                    playPauseToggler = "pause"
+                                                    dispatch.pause()
+                                                }
+                                                else {
+                                                    playPauseToggler = "play"
+                                                    dispatch.resume()
+                                                }
                                                 break
                                         }
                                     })
-                                    await msg.react("▶")
-                                    await msg.react("⏸")
+                                    await msg.react("⏯")
                                     await msg.react("⏹")
                                     await msg.react("🔁")
                                 })
