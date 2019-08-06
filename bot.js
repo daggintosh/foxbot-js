@@ -425,14 +425,16 @@ client.on('message', async msg => {
                                                 break
                                             case "⬆":
                                                 reaction.remove(author)
-                                                dispatch.setVolume((dispatch.volume * 10 + 0.1 * 10) / 10)
-                                                ytEmbed.fields[1] = { name: "🔈 Volume", value: dispatch.volume.toString(), inline: true }
+                                                volume = (volume * 10 + 0.1 * 10) / 10
+                                                dispatch.setVolume(volume)
+                                                ytEmbed.fields[1] = { name: "🔈 Volume", value: volume.toString(), inline: true }
                                                 msg.edit(ytEmbed)
                                                 break
                                             case "⬇":
                                                 reaction.remove(author)
-                                                dispatch.setVolume((dispatch.volume * 10 - 0.1 * 10) / 10)
-                                                ytEmbed.fields[1] = { name: "🔈 Volume", value: dispatch.volume.toString(), inline: true }
+                                                volume = (volume * 10 - 0.1 * 10) / 10
+                                                dispatch.setVolume(volume)
+                                                ytEmbed.fields[1] = { name: "🔈 Volume", value: volume.toString(), inline: true }
                                                 msg.edit(ytEmbed)
                                                 break
                                         }
