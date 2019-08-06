@@ -486,7 +486,7 @@ client.on('message', async msg => {
                 .setFooter(infoDate.toUTCString())
                 if(argument[0] == undefined) {
                     if(msg.member.colorRole == undefined) rolecolor = "#b5b5b5"
-                    else rolecolor = msg.member.colorRole.color
+                    else rolecolor = msg.member.colorRole.hexColor
                     infoEmbed.setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.avatarURL)
                     .setThumbnail(msg.author.avatarURL)
                     .setTitle(`User Id: ${msg.author.id}`)
@@ -497,10 +497,10 @@ client.on('message', async msg => {
                     msg.channel.send(infoEmbed)
                 }
                 else if (msg.mentions.users.first()){
-                    if(msg.member.colorRole == undefined) rolecolor = "#b5b5b5"
-                    else rolecolor = mentionedMember.colorRole.color
                     var mentionedUser = msg.mentions.users.first()
                     var mentionedMember = msg.guild.member(mentionedUser)
+                    if(mentionedMember.colorRole == undefined) rolecolor = "#b5b5b5"
+                    else rolecolor = mentionedMember.colorRole.hexColor
                     infoEmbed.setAuthor(`${mentionedUser.username}#${mentionedUser.discriminator}`, mentionedUser.avatarURL)
                     .setThumbnail(mentionedUser.avatarURL)
                     .setTitle(`User Id: ${mentionedUser.id}`)
