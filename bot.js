@@ -44,6 +44,7 @@ client.on('ready', async () => {
         if (guildexists == undefined)
         {
             await store.set(guild.id, defaultPrefix)
+            console.log(await store.get(guild.id))
         }
     })
 })
@@ -70,6 +71,8 @@ client.on('message', async msg => {
         || reaction.emoji.name === "⏹" && user.id === msg.author.id 
         || reaction.emoji.name === "🔁" && user.id === msg.author.id
         || reaction.emoji.name === "⏯" && user.id === msg.author.id
+        || reaction.emoji.name === "⬆" && user.id === msg.author.id
+        || reaction.emoji.name === "⬇" && user.id === msg.author.id
 
     if (msg.guild) {
         var prefix = await store.get(msg.member.guild.id)
@@ -364,8 +367,10 @@ client.on('message', async msg => {
                                 dispatch.setVolume(0.5)
                                 let ytEmbed = new Discord.RichEmbed()
                                 .setAuthor(info.author.name, info.author.avatar)
-                                .setFooter(info.player_response.videoDetails.viewCount.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + ` views | Repeat: ${repeat}`)
-                                .addField("Now Playing", info.player_response.videoDetails.title)
+                                .setFooter(`👁 ${info.player_response.videoDetails.viewCount.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} views`)
+                                .addField("🎵 Now Playing 🎵", info.player_response.videoDetails.title)
+                                .addField("🔈 Volume 🔈", dispatch.volume, true)
+                                .addField("🔁 Repeat 🔁", repeat, true)
                                 .setThumbnail(info.player_response.videoDetails.thumbnail.thumbnails[0].url)
                                 .setTitle(info.video_url)
                                 .setURL(info.video_url)
@@ -397,12 +402,12 @@ client.on('message', async msg => {
                                                 reaction.remove(author)
                                                 if(repeat === "OFF") {
                                                     repeat = "ON"
-                                                    ytEmbed.setFooter(info.player_response.videoDetails.viewCount.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + ` views | Repeat: ${repeat}`)
+                                                    ytEmbed.fields[2] = { name: "🔁 Repeat 🔁", value: repeat, inline: true }
                                                     msg.edit(ytEmbed)
                                                 }
                                                 else {
                                                     repeat = "OFF"
-                                                    ytEmbed.setFooter(info.player_response.videoDetails.viewCount.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + ` views | Repeat: ${repeat}`)
+                                                    ytEmbed.fields[2] = { name: "🔁 Repeat 🔁", value: repeat, inline: true }
                                                     msg.edit(ytEmbed)
                                                 }
                                                 break
@@ -417,11 +422,25 @@ client.on('message', async msg => {
                                                     dispatch.resume()
                                                 }
                                                 break
+                                            case "⬆":
+                                                reaction.remove(author)
+                                                dispatch.setVolume((dispatch.volume * 10 + 0.1 * 10) / 10)
+                                                ytEmbed.fields[1] = { name: "🔈 Volume 🔈", value: dispatch.volume.toString(), inline: true }
+                                                msg.edit(ytEmbed)
+                                                break
+                                            case "⬇":
+                                                reaction.remove(author)
+                                                dispatch.setVolume((dispatch.volume * 10 - 0.1 * 10) / 10)
+                                                ytEmbed.fields[1] = { name: "🔈 Volume 🔈", value: dispatch.volume.toString(), inline: true }
+                                                msg.edit(ytEmbed)
+                                                break
                                         }
                                     })
                                     await msg.react("⏯")
                                     await msg.react("⏹")
                                     await msg.react("🔁")
+                                    await msg.react("⬆")
+                                    await msg.react("⬇")
                                 })
                             })
                         })
