@@ -349,6 +349,7 @@ client.on('message', async msg => {
             //#region play
             case "play":
                 let repeat = "OFF"
+                let volume = 0.5
                 play()
                 function play() {
                     if (argument[0] == undefined){ msg.reply ("Do you want me to just scream?") }
@@ -364,7 +365,7 @@ client.on('message', async msg => {
                             .then(connection => {
                                 voiceActive[msg.member.guild.id] = true
                                 let dispatch = connection.playStream(video)
-                                dispatch.setVolume(0.5)
+                                dispatch.setVolume(volume)
                                 let ytEmbed = new Discord.RichEmbed()
                                 .setAuthor(info.author.name, info.author.avatar)
                                 .setFooter(`👁 ${info.player_response.videoDetails.viewCount.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} views`)
