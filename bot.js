@@ -371,7 +371,7 @@ client.on('message', async msg => {
                                 .addField("🎵 Now Playing 🎵", info.player_response.videoDetails.title)
                                 .addField("🔈 Volume 🔈", dispatch.volume, true)
                                 .addField("🔁 Repeat 🔁", repeat, true)
-                                .setThumbnail(info.player_response.videoDetails.thumbnail.thumbnails[0].url)
+                                .setImage(info.player_response.videoDetails.thumbnail.thumbnails[3].url)
                                 .setTitle(info.video_url)
                                 .setURL(info.video_url)
                                 .setColor("#ff1100")
