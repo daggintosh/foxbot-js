@@ -368,9 +368,9 @@ client.on('message', async msg => {
                                 let ytEmbed = new Discord.RichEmbed()
                                 .setAuthor(info.author.name, info.author.avatar)
                                 .setFooter(`👁 ${info.player_response.videoDetails.viewCount.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} views`)
-                                .addField("🎵 Now Playing 🎵", info.player_response.videoDetails.title)
-                                .addField("🔈 Volume 🔈", dispatch.volume, true)
-                                .addField("🔁 Repeat 🔁", repeat, true)
+                                .addField("🎵 Now Playing", info.player_response.videoDetails.title)
+                                .addField("🔈 Volume", dispatch.volume, true)
+                                .addField("🔁 Repeat", repeat, true)
                                 .setImage(info.player_response.videoDetails.thumbnail.thumbnails[3].url)
                                 .setTitle(info.video_url)
                                 .setURL(info.video_url)
@@ -402,12 +402,12 @@ client.on('message', async msg => {
                                                 reaction.remove(author)
                                                 if(repeat === "OFF") {
                                                     repeat = "ON"
-                                                    ytEmbed.fields[2] = { name: "🔁 Repeat 🔁", value: repeat, inline: true }
+                                                    ytEmbed.fields[2] = { name: "🔁 Repeat", value: repeat, inline: true }
                                                     msg.edit(ytEmbed)
                                                 }
                                                 else {
                                                     repeat = "OFF"
-                                                    ytEmbed.fields[2] = { name: "🔁 Repeat 🔁", value: repeat, inline: true }
+                                                    ytEmbed.fields[2] = { name: "🔁 Repeat", value: repeat, inline: true }
                                                     msg.edit(ytEmbed)
                                                 }
                                                 break
@@ -425,13 +425,13 @@ client.on('message', async msg => {
                                             case "⬆":
                                                 reaction.remove(author)
                                                 dispatch.setVolume((dispatch.volume * 10 + 0.1 * 10) / 10)
-                                                ytEmbed.fields[1] = { name: "🔈 Volume 🔈", value: dispatch.volume.toString(), inline: true }
+                                                ytEmbed.fields[1] = { name: "🔈 Volume", value: dispatch.volume.toString(), inline: true }
                                                 msg.edit(ytEmbed)
                                                 break
                                             case "⬇":
                                                 reaction.remove(author)
                                                 dispatch.setVolume((dispatch.volume * 10 - 0.1 * 10) / 10)
-                                                ytEmbed.fields[1] = { name: "🔈 Volume 🔈", value: dispatch.volume.toString(), inline: true }
+                                                ytEmbed.fields[1] = { name: "🔈 Volume", value: dispatch.volume.toString(), inline: true }
                                                 msg.edit(ytEmbed)
                                                 break
                                         }
