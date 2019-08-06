@@ -103,7 +103,6 @@ client.on('disconnect', () => console.error("The bot has lost connection to the 
 
 client.on('message', async msg => {
     if(msg.author.bot) return
-    if (msg.member.guild.me.hasPermission("MANAGE_MESSAGES") == false) { return msg.reply("This bot requires message management to be enabled! It's used for and only for reaction handling.") }
     const filter = (reaction, user) => 
         reaction.emoji.name === "➡" && user.id === msg.author.id 
         || reaction.emoji.name === "⏹" && user.id === msg.author.id 
@@ -113,6 +112,7 @@ client.on('message', async msg => {
     if (msg.guild) {
         var prefix = await store.get(msg.member.guild.id)
         if (msg.content.indexOf(prefix) !== 0 ) return 
+        if (msg.member.guild.me.hasPermission("MANAGE_MESSAGES") == false) return msg.reply("This bot requires message management to be enabled! It's used for and only for reaction handling.") 
         const argument = msg.content.slice(prefix.length).trim().split(/ +/g)
         const command = argument.shift().toLowerCase()
         let author = msg.author.id 
@@ -181,35 +181,43 @@ client.on('message', async msg => {
 
             //#region cat
             case "cat":
-                cat()
-                function cat()
+                let catImage
+                requestCat(z => postCat())
+                function requestCat(callback)
                 {
-                    request('http://aws.random.cat/meow', { json: true } , (error, response, body) => {
-                        let catDate = new Date() 
-                        let catEmbed = new Discord.RichEmbed()      
-                        .setColor(randomcolour())
-                        .setTitle(catPhrases[Math.floor(Math.random()*catPhrases.length)])
-                        .setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.avatarURL)
-                        .setImage(body.file)
-                        .setFooter(catDate.toUTCString())
-                        msg.channel.send(catEmbed)
-                        .then(async msg => {
-                            msg.createReactionCollector(filter , { time: 60000 })
-                            .on('collect', reaction => {
-                                switch(reaction.emoji.name)
-                                {
-                                    case "➡":
-                                        msg.delete()
-                                        cat()
-                                        break
-                                    case "⏹":
-                                        msg.delete()
-                                        break
-                                }
-                            })
+                    request("http://aws.random.cat/meow", { json: true } , (error, response, body) => {
+                        catImage = body.file
+                        callback()
+                    })
+                }
+                function postCat()
+                {
+                    let catDate = new Date() 
+                    let catEmbed = new Discord.RichEmbed()      
+                    .setColor(randomcolour())
+                    .setTitle(catPhrases[Math.floor(Math.random()*catPhrases.length)])
+                    .setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.avatarURL)
+                    .setImage(catImage)
+                    .setFooter(catDate.toUTCString())
+                    msg.channel.send(catEmbed)
+                    .then(async msg => {
+                        msg.createReactionCollector(filter , { time: null })
+                        .on('collect', reaction => {
+                            switch(reaction.emoji.name)
+                            {
+                                case "➡":
+                                    requestCat(z => {})
+                                    catEmbed.setImage(catImage)
+                                    reaction.remove(author)
+                                    msg.edit(catEmbed)
+                                    break
+                                case "⏹":
+                                    msg.delete()
+                                    break
+                            }
+                        })
                             await msg.react("➡")
                             await msg.react("⏹")
-                        })
                     })
                 }
                 break
@@ -339,7 +347,7 @@ client.on('message', async msg => {
                     .addField(prefix + "cat", "Post a random cat", true)
                     .addField(prefix + "dog", "Post a random dog", true)
                     .addField(prefix + "wolf", "Post a random wolf", true)
-                    .addField(prefix + "play [Search Term or YouTube URL]", "Plays a song", true)
+                    .addField(prefix + "play [Search/URL]", "Plays a song", true)
                     .addField(prefix + "prefix [Prefix]", "Sets server prefix", true)
                     .addField(prefix + "info [User Mention]", "Gathers basic info of a user", true)
                     .addField(prefix + "kick [User Mention]", "Kicks a user from the guild", true)
