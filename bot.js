@@ -504,9 +504,9 @@ client.on('message', async msg => {
                     infoEmbed.setAuthor(`${mentionedUser.username}#${mentionedUser.discriminator}`, mentionedUser.avatarURL)
                     .setThumbnail(mentionedUser.avatarURL)
                     .setTitle(`User Id: ${mentionedUser.id}`)
-                    .addField("Account Created", mentionedUser.createdAt.toUTCString())
-                    .addField("User Joined", mentionedMember.joinedAt.toUTCString())
-                    .addField("Roles", mentionedMember.roles.map(z => z).join(", "))
+                    .addField("Account Created", mentionedUser.createdAt.toUTCString(), true)
+                    .addField("User Joined", mentionedMember.joinedAt.toUTCString(), true)
+                    .addField("Roles", mentionedMember.roles.map(z => z).join(", "), true)
                     .setColor(rolecolor)
                     msg.channel.send(infoEmbed)
                 }
