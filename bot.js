@@ -103,6 +103,7 @@ client.on('disconnect', () => console.error("The bot has lost connection to the 
 
 client.on('message', async msg => {
     if(msg.author.bot) return
+    if (msg.member.guild.me.hasPermission("MANAGE_MESSAGES") == false) { return msg.reply("This bot requires message management to be enabled! It's used for and only for reaction handling.") }
     const filter = (reaction, user) => 
         reaction.emoji.name === "➡" && user.id === msg.author.id 
         || reaction.emoji.name === "⏹" && user.id === msg.author.id 
@@ -114,6 +115,7 @@ client.on('message', async msg => {
         if (msg.content.indexOf(prefix) !== 0 ) return 
         const argument = msg.content.slice(prefix.length).trim().split(/ +/g)
         const command = argument.shift().toLowerCase()
+        let author = msg.author.id 
         switch(command)
         {
             //#region about
@@ -135,36 +137,44 @@ client.on('message', async msg => {
 
             //#region fox
             case "fox":
-                fox()
-                function fox()
+                let foxImage
+                requestFox(z => postFox())
+                function requestFox(callback)
                 {
-                    request("https://dagg.xyz/randomfox/", { json: true } , (error, response, body) => { 
-                        let foxDate = new Date()
-                        let foxEmbed = new Discord.RichEmbed()      
-                        .setColor(randomcolour())
-                        .setTitle(foxPhrases[Math.floor(Math.random()*foxPhrases.length)])
-                        .setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.avatarURL)
-                        .setImage(body.link)
-                        .setFooter(foxDate.toUTCString())
-                        msg.channel.send(foxEmbed)
-                        .then(async msg => {
-                            msg.createReactionCollector(filter , { time: 60000 })
-                            .on('collect', reaction => {
-                                switch(reaction.emoji.name)
-                                {
-                                    case "➡":
-                                        msg.delete()
-                                        fox()
-                                        break
-                                    case "⏹":
-                                        msg.delete()
-                                        break
-                                }
-                            })
+                    request("https://dagg.xyz/randomfox/", { json: true } , (error, response, body) => {
+                        foxImage = body.link
+                        callback()
+                    })
+                }
+                function postFox()
+                {
+                    let foxDate = new Date()
+                    let foxEmbed = new Discord.RichEmbed()      
+                    .setColor(randomcolour())
+                    .setTitle(foxPhrases[Math.floor(Math.random()*foxPhrases.length)])
+                    .setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.avatarURL)
+                    .setImage(foxImage)
+                    .setFooter(foxDate.toUTCString())
+                    msg.channel.send(foxEmbed)
+                    .then(async msg => {
+                        msg.createReactionCollector(filter , { time: null })
+                        .on('collect', reaction => {
+                            switch(reaction.emoji.name)
+                            {
+                                case "➡":
+                                    requestFox(z => {})
+                                    foxEmbed.setImage(foxImage)
+                                    reaction.remove(author)
+                                    msg.edit(foxEmbed)
+                                    break
+                                case "⏹":
+                                    msg.delete()
+                                    break
+                            }
+                        })
                             await msg.react("➡")
                             await msg.react("⏹")
-                        })
-                    }) 
+                    })
                 }
                 break
             //#endregion
@@ -346,8 +356,6 @@ client.on('message', async msg => {
             //#region play
             case "play":
                 let repeat = "OFF"
-                let author = msg.author.id 
-                if (msg.member.guild.me.hasPermission("MANAGE_MESSAGES") == false) { return msg.reply("I cannot modify messages! (Required for interactivity)") }
                 play()
                 function play() {
                     if (argument[0] == undefined){ msg.reply ("Do you want me to just scream?") }
