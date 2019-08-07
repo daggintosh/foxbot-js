@@ -29,6 +29,13 @@ const phrases = [
 ]
 const animal = /animal/gi
 
+const urls = {
+    fox: { url: "https://dagg.xyz/randomfox", result: "link" },
+    wolf: { url: "https://dagg.xyz/randomwolf", result: "link" },
+    cat: { url: "http://aws.random.cat/meow", result: "file" },
+    dog: { url: "https://dog.ceo/api/breeds/image/random", result: "message" }
+}
+
 let defaultPrefix = prefconf.defaultPrefix
 
 let voiceActive = {}
@@ -200,8 +207,16 @@ client.on('message', async msg => {
                     if (argument[0] == undefined){ msg.reply ("Do you want me to just scream?") }
                     else if(voiceActive[msg.member.guild.id] == true) { msg.reply("I'm already playing something!") }
                     else if (msg.member.voiceChannel == undefined) { msg.reply("You aren't in a voice channel!") }
+                    else if (msg.member.voiceChannel.joinable == false) { msg.reply("I cannot join this channel!") }
                     else if(argument[0].includes("youtube.com/watch?v=") || argument[0].includes("https://youtu.be/")){
                         let voiceChannel = msg.member.voiceChannel
+                        let follow = setInterval(z => {
+                            if(msg.member.voiceChannel.joinable == false) clearInterval(follow), msg.reply("I can't join this channel, I will no longer follow you.")
+                            if(voiceChannel != msg.member.voiceChannel && msg.member.voiceChannel.joinable == true) {
+                                voiceChannel = msg.member.voiceChannel
+                                voiceChannel.join()
+                            }
+                        }, 1000)
                         let url = argument[0]
                         let video = youtube(url)
                         youtube.getInfo(url, (error, info) => {
@@ -230,7 +245,8 @@ client.on('message', async msg => {
                                             play()
                                         }
                                         else {
-                                            voiceActive[msg.member.guild.id] = false, 
+                                            voiceActive[msg.member.guild.id] = false,
+                                            clearInterval(follow),
                                             msg.delete(), 
                                             voiceChannel.leave(), 
                                             connection.dispatcher.end()
@@ -295,7 +311,7 @@ client.on('message', async msg => {
                     }
                     else {
                         let searchTerm = JSON.stringify(argument)
-                        let filteredTerm = searchTerm.replace(/"|,|]|\[/gi, " ")
+                        let filteredTerm = searchTerm.replace(/"|,|]|\[/gi, " ").replace(/\s+/g, " ").trim()
                         ytsearch(apitoken, { q:`${filteredTerm}`, part: "snippet", type: "video,playlist"}, (error, result) => {
                             if (result == undefined) { msg.reply("I've got nothing!"); return }
                             argument[0] = `https://youtu.be/${result.items[0].id.videoId}`
@@ -456,40 +472,22 @@ async function sendimg(animalimg, msg) {
     const imgfilter = (reaction, user) => 
         reaction.emoji.name === "➡" && user.id === msg.author.id 
         || reaction.emoji.name === "⏹" && user.id === msg.author.id
-    let image
     postimg()
 
-    async function requestimg()
+    async function requestimg(animalimg)
     {
-        let axiosreq
-        switch (animalimg) {
-            case "fox":
-                axiosreq = await axios.get("https://dagg.xyz/randomfox")
-                image = axiosreq.data.link
-                break
-            case "wolf":
-                axiosreq = await axios.get("https://dagg.xyz/randomwolf/")
-                image = axiosreq.data.link
-                break
-            case "cat":
-                axiosreq = await axios.get("http://aws.random.cat/meow")
-                image = axiosreq.data.file
-                break
-            case "dog":
-                axiosreq = await axios.get("https://dog.ceo/api/breeds/image/random")
-                image = axiosreq.data.message
-                break
-        }
+        const info = urls[animalimg];
+        return (await axios.get(info.url)).data[info.result];
     }
     async function postimg()
     {
-        await requestimg()
+        let result = await requestimg(animalimg)
         let date = new Date()
         let embed = new Discord.RichEmbed()      
         .setColor(randomcolour())
         .setTitle(phrases[Math.floor(Math.random()*phrases.length)].replace(animal, animalimg))
         .setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.avatarURL)
-        .setImage(image)
+        .setImage(result)
         .setFooter(date.toUTCString())
         msg.channel.send(embed)
         .then(async msg => {
@@ -498,8 +496,8 @@ async function sendimg(animalimg, msg) {
                 switch(reaction.emoji.name)
                 {
                     case "➡":
-                        await requestimg()
-                        embed.setImage(image)
+                        result = await requestimg(animalimg)
+                        embed.setImage(result)
                         reaction.remove(author)
                         msg.edit(embed)
                         break
