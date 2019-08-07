@@ -4,11 +4,11 @@ const Discord = require('discord.js')
 const client = new Discord.Client()
 const randomcolour = require('randomcolor')
 const youtube = require('ytdl-core')
-const request = require('request')
+const axios = require('axios')
 const keyv = require('keyv')
 const ytsearch = require('youtube-api-v3-search')
 
-const token = require("./token.json") // BOT TOKEN
+const token = require("./token.json") // BOT TOKEN & YT API KEY
 const mongoconf = require("./mongo.json") // MONGODB CONFIGURATION
 const prefconf = require("./config.json") // DEFAULT PREFIX
 
@@ -66,20 +66,18 @@ client.on('disconnect', () => console.error("The bot has lost connection to the 
 client.on('message', async msg => {
     if(msg.author.bot) return
     const filter = (reaction, user) => 
-        reaction.emoji.name === "➡" && user.id === msg.author.id 
-        || reaction.emoji.name === "⏹" && user.id === msg.author.id 
+        reaction.emoji.name === "⏹" && user.id === msg.author.id 
         || reaction.emoji.name === "🔁" && user.id === msg.author.id
         || reaction.emoji.name === "⏯" && user.id === msg.author.id
         || reaction.emoji.name === "⬆" && user.id === msg.author.id
         || reaction.emoji.name === "⬇" && user.id === msg.author.id
-
     if (msg.guild) {
         var prefix = await store.get(msg.member.guild.id)
         if (msg.content.indexOf(prefix) !== 0 ) return 
         if (msg.member.guild.me.hasPermission("MANAGE_MESSAGES") == false) return msg.reply("This bot requires message management to be enabled! It's used for and only for reaction handling.") 
         const argument = msg.content.slice(prefix.length).trim().split(/ +/g)
         const command = argument.shift().toLowerCase()
-        let author = msg.author.id 
+        let author = msg.author.id
         switch(command)
         {
             //#region about
@@ -101,181 +99,29 @@ client.on('message', async msg => {
 
             //#region fox
             case "fox":
-                let foxImage
-                requestFox(z => postFox())
-                function requestFox(callback)
-                {
-                    request("https://dagg.xyz/randomfox/", { json: true } , (error, response, body) => {
-                        foxImage = body.link
-                        callback()
-                    })
-                }
-                function postFox()
-                {
-                    requestFox(z => {})
-                    let foxDate = new Date()
-                    let foxEmbed = new Discord.RichEmbed()      
-                    .setColor(randomcolour())
-                    .setTitle(phrases[Math.floor(Math.random()*phrases.length)].replace(animal, "fox"))
-                    .setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.avatarURL)
-                    .setImage(foxImage)
-                    .setFooter(foxDate.toUTCString())
-                    msg.channel.send(foxEmbed)
-                    .then(async msg => {
-                        msg.createReactionCollector(filter , { time: null })
-                        .on('collect', reaction => {
-                            switch(reaction.emoji.name)
-                            {
-                                case "➡":
-                                    requestFox(z => {})
-                                    foxEmbed.setImage(foxImage)
-                                    reaction.remove(author)
-                                    msg.edit(foxEmbed)
-                                    break
-                                case "⏹":
-                                    msg.delete()
-                                    break
-                            }
-                        })
-                            await msg.react("➡")
-                            await msg.react("⏹")
-                    })
-                }
+                animalimg = "fox"
+                sendimg(animalimg, msg)
                 break
             //#endregion
 
             //#region cat
             case "cat":
-                let catImage
-                requestCat(z => postCat())
-                function requestCat(callback)
-                {
-                    request("http://aws.random.cat/meow", { json: true } , (error, response, body) => {
-                        catImage = body.file
-                        callback()
-                    })
-                }
-                function postCat()
-                {
-                    requestCat(z => {})
-                    let catDate = new Date() 
-                    let catEmbed = new Discord.RichEmbed()      
-                    .setColor(randomcolour())
-                    .setTitle(phrases[Math.floor(Math.random()*phrases.length)].replace(animal, "cat"))
-                    .setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.avatarURL)
-                    .setImage(catImage)
-                    .setFooter(catDate.toUTCString())
-                    msg.channel.send(catEmbed)
-                    .then(async msg => {
-                        msg.createReactionCollector(filter , { time: null })
-                        .on('collect', reaction => {
-                            switch(reaction.emoji.name)
-                            {
-                                case "➡":
-                                    requestCat(z => {})
-                                    catEmbed.setImage(catImage)
-                                    reaction.remove(author)
-                                    msg.edit(catEmbed)
-                                    break
-                                case "⏹":
-                                    msg.delete()
-                                    break
-                            }
-                        })
-                            await msg.react("➡")
-                            await msg.react("⏹")
-                    })
-                }
+                animalimg = "cat"
+                sendimg(animalimg, msg)
                 break
             //#endregion
 
             //#region wolf
             case "wolf":
-                let wolfImage
-                requestWolf(z => postWolf())
-                function requestWolf(callback)
-                {
-                    request("https://dagg.xyz/randomwolf/", { json: true } , (error, response, body) => {
-                        wolfImage = body.link
-                        callback()
-                    })
-                }
-                function postWolf()
-                {
-                    requestWolf(z => {})
-                    let wolfDate = new Date()
-                    let wolfEmbed = new Discord.RichEmbed()      
-                    .setColor(randomcolour())
-                    .setTitle(phrases[Math.floor(Math.random()*phrases.length)].replace(animal, "wolf"))
-                    .setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.avatarURL)
-                    .setImage(wolfImage)
-                    .setFooter(wolfDate.toUTCString())
-                    msg.channel.send(wolfEmbed)
-                    .then(async msg => {
-                        msg.createReactionCollector(filter , { time: null })
-                        .on('collect', reaction => {
-                            switch(reaction.emoji.name)
-                            {
-                                case "➡":
-                                    requestWolf(z => {})
-                                    wolfEmbed.setImage(wolfImage)
-                                    reaction.remove(author)
-                                    msg.edit(wolfEmbed)
-                                    break
-                                case "⏹":
-                                    msg.delete()
-                                    break
-                            }
-                        })
-                            await msg.react("➡")
-                            await msg.react("⏹")
-                    })
-                }
+                animalimg = "wolf"
+                sendimg(animalimg, msg)
                 break
             //#endregion
             
             //#region dog
             case "dog":
-                let dogImage
-                requestDog(z => postDog())
-                function requestDog(callback)
-                {
-                    request("https://dog.ceo/api/breeds/image/random", { json: true } , (error, response, body) => {
-                        dogImage = body.message
-                        callback()
-                    })
-                }
-                function postDog()
-                {
-                    requestDog(z => {})
-                    let dogDate = new Date() 
-                    let dogEmbed = new Discord.RichEmbed()      
-                    .setColor(randomcolour())
-                    .setTitle(phrases[Math.floor(Math.random()*phrases.length)].replace(animal, "dog"))
-                    .setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.avatarURL)
-                    .setImage(dogImage)
-                    .setFooter(dogDate.toUTCString())
-                    msg.channel.send(dogEmbed)
-                    .then(async msg => {
-                        msg.createReactionCollector(filter , { time: null })
-                        .on('collect', reaction => {
-                            switch(reaction.emoji.name)
-                            {
-                                case "➡":
-                                    requestDog(z => {})
-                                    dogEmbed.setImage(dogImage)
-                                    reaction.remove(author)
-                                    msg.edit(dogEmbed)
-                                    break
-                                case "⏹":
-                                    msg.delete()
-                                    break
-                            }
-                        })
-                            await msg.react("➡")
-                            await msg.react("⏹")
-                    })
-                }
+                animalimg = "dog"
+                sendimg(animalimg, msg)
                 break
             //#endregion
 
@@ -604,3 +450,66 @@ client.on('message', async msg => {
         msg.reply("Sorry, I don't support direct messages!")
     }
 })
+
+async function sendimg(animalimg, msg) {
+    let author = msg.author.id
+    const imgfilter = (reaction, user) => 
+        reaction.emoji.name === "➡" && user.id === msg.author.id 
+        || reaction.emoji.name === "⏹" && user.id === msg.author.id
+    let image
+    postimg()
+
+    async function requestimg()
+    {
+        let axiosreq
+        switch (animalimg) {
+            case "fox":
+                axiosreq = await axios.get("https://dagg.xyz/randomfox")
+                image = axiosreq.data.link
+                break
+            case "wolf":
+                axiosreq = await axios.get("https://dagg.xyz/randomwolf/")
+                image = axiosreq.data.link
+                break
+            case "cat":
+                axiosreq = await axios.get("http://aws.random.cat/meow")
+                image = axiosreq.data.file
+                break
+            case "dog":
+                axiosreq = await axios.get("https://dog.ceo/api/breeds/image/random")
+                image = axiosreq.data.message
+                break
+        }
+    }
+    async function postimg()
+    {
+        await requestimg()
+        let date = new Date()
+        let embed = new Discord.RichEmbed()      
+        .setColor(randomcolour())
+        .setTitle(phrases[Math.floor(Math.random()*phrases.length)].replace(animal, animalimg))
+        .setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.avatarURL)
+        .setImage(image)
+        .setFooter(date.toUTCString())
+        msg.channel.send(embed)
+        .then(async msg => {
+            msg.createReactionCollector(imgfilter , { time: null })
+            .on('collect', async reaction => {
+                switch(reaction.emoji.name)
+                {
+                    case "➡":
+                        await requestimg()
+                        embed.setImage(image)
+                        reaction.remove(author)
+                        msg.edit(embed)
+                        break
+                    case "⏹":
+                        msg.delete()
+                        break
+                }
+            })
+                await msg.react("➡")
+                await msg.react("⏹")
+        })
+    }
+}
