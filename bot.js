@@ -76,11 +76,12 @@ client.on('disconnect', () => console.error("The bot has lost connection to the 
 client.on('message', async msg => {
     if (msg.author.bot) return
     const filter = (reaction, user) =>
-        reaction.emoji.name === "⏹" && user.id === msg.author.id
-        || reaction.emoji.name === "🔁" && user.id === msg.author.id
-        || reaction.emoji.name === "⏯" && user.id === msg.author.id
-        || reaction.emoji.name === "⬆" && user.id === msg.author.id
-        || reaction.emoji.name === "⬇" && user.id === msg.author.id
+        [reaction.emoji.name === "⏹",
+        reaction.emoji.name === "🔁",
+        reaction.emoji.name === "⏯",
+        reaction.emoji.name === "⬆",
+        reaction.emoji.name === "⬇"]
+        && user.id === msg.author.id
     if (msg.guild) {
         var prefix = await store.get(msg.member.guild.id)
         if (msg.content.indexOf(prefix) !== 0) return
@@ -476,9 +477,7 @@ async function requestimg(animalimg) {
 
 async function sendimg(animalimg, msg) {
     let author = msg.author.id
-    const imgfilter = (reaction, user) =>
-        reaction.emoji.name === "➡" && user.id === msg.author.id
-        || reaction.emoji.name === "⏹" && user.id === msg.author.id
+    const imgfilter = (reaction, user) => [reaction.emoji.name === "➡", reaction.emoji.name === "⏹"] && user.id === msg.author.id
     postimg()
     async function postimg() {
         result = await requestimg(animalimg)
