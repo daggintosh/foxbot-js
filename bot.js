@@ -25,7 +25,10 @@ const phrases = [
     "A wild animal has appeared!",
     "A animal challenges you!",
     "You see a animal!",
-    "Wow! A animal!"
+    "Wow! A animal!",
+    "Woah theres a animal over there!",
+    "There appears to be a animal lurking about",
+    "A animal appears before you!"
 ]
 const animal = /animal/gi
 
