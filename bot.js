@@ -137,7 +137,7 @@ client.on('message', async msg => {
                 let timeDate = new Date()
                 let timeEmbed = new Discord.RichEmbed()
                 .setColor(randomcolour())
-                .setDescription("**It's time to go to bed, you dolt.**")
+                .addField("Time:", timeDate.toUTCString().substr(16, 28), true)
                 .setFooter(timeDate.toUTCString())
                 .setAuthor(msg.author.username, msg.author.avatarURL)
                 msg.channel.send(timeEmbed)
