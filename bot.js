@@ -222,7 +222,7 @@ client.on('message', async msg => {
                         let url = argument[0]
                         let video = youtube(url)
                         youtube.getInfo(url, (error, info) => {
-                            let playPauseToggler = "play"
+                            let playPauseToggler = "PLAYING"
                             voiceChannel.join()
                             .then(connection => {
                                 voiceActive[msg.member.guild.id] = true
@@ -234,6 +234,7 @@ client.on('message', async msg => {
                                 .addField("🎵 Now Playing", info.player_response.videoDetails.title)
                                 .addField("🔈 Volume", dispatch.volume, true)
                                 .addField("🔁 Repeat", repeat, true)
+                                .addField("ℹ Status", playPauseToggler, true)
                                 .setImage(info.player_response.videoDetails.thumbnail.thumbnails[3].url)
                                 .setTitle(info.video_url)
                                 .setURL(info.video_url)
@@ -277,12 +278,16 @@ client.on('message', async msg => {
                                                 break
                                             case "⏯":
                                                 reaction.remove(author)
-                                                if(playPauseToggler === "play") {
-                                                    playPauseToggler = "pause"
+                                                if(playPauseToggler === "PLAYING") {
+                                                    playPauseToggler = "PAUSED"
+                                                    ytEmbed.fields[3] = { name: "ℹ Status", value: playPauseToggler, inline: true }
+                                                    msg.edit(ytEmbed)
                                                     dispatch.pause()
                                                 }
                                                 else {
-                                                    playPauseToggler = "play"
+                                                    playPauseToggler = "PLAYING"
+                                                    ytEmbed.fields[3] = { name: "ℹ Status", value: playPauseToggler, inline: true }
+                                                    msg.edit(ytEmbed)
                                                     dispatch.resume()
                                                 }
                                                 break
