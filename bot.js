@@ -220,7 +220,7 @@ client.on('message', async msg => {
                             }
                         }, 1000)
                         let url = argument[0]
-                        let video = youtube(url)
+                        let video = youtube(url, { highWaterMark: 1<<25 })
                         youtube.getInfo(url, (error, info) => {
                             let playPauseToggler = "PLAYING"
                             voiceChannel.join()
