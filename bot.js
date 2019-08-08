@@ -392,11 +392,11 @@ client.on('message', async msg => {
                     msg.reply("You do not have permissions to kick users.")
                     return
                 }
-                else if (argument[0] == undefined) {
+                if (argument[0] == undefined) {
                     msg.reply("You did not mention a user!")
                     return
                 }
-                else if (msg.mentions.users.first()) {
+                if (msg.mentions.users.first()) {
                     var mentionedUser = msg.mentions.users.first()
                     var mentionedMember = msg.guild.member(mentionedUser)
                     if (mentionedMember.id == client.user.id) {
@@ -430,11 +430,11 @@ client.on('message', async msg => {
                     msg.reply("You do not have permissions to ban users.")
                     return
                 }
-                else if (argument[0] == undefined) {
+                if (argument[0] == undefined) {
                     msg.reply("You did not mention a user!")
                     return
                 }
-                else if (msg.mentions.users.first()) {
+                if (msg.mentions.users.first()) {
                     var mentionedUser = msg.mentions.users.first()
                     var mentionedMember = msg.guild.member(mentionedUser)
                     if (mentionedMember.id == client.user.id) {
