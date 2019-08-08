@@ -191,7 +191,7 @@ client.on('message', async msg => {
                     .addField(`${prefix}kick [User Mention]`, "Kick a user from the guild", true)
                     .addField(`${prefix}ban [User Mention]`, "Ban a user from the guild", true)
                     .addField(`${prefix}reset`, "Reset the music bot in case of user or bot error", true)
-                    .addField(`${prefix}rng [Min] [Max] or [Max]`, "Post a random number",true)
+                    .addField(`${prefix}rng [Min] [Max] or [Max]`, "Post a random number", true)
                     .setFooter(helpDate.toUTCString())
                     .setAuthor("FoxBot", "https://cdn.discordapp.com/avatars/601967284394917900/f25955e890f89f1015762647f82ea555.webp")
                     .setThumbnail(result)
