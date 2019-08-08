@@ -35,6 +35,7 @@ const urls = {
     cat: { url: "http://aws.random.cat/meow", result: "file" },
     dog: { url: "https://dog.ceo/api/breeds/image/random", result: "message" }
 }
+let result
 
 let defaultPrefix = prefconf.defaultPrefix
 
@@ -89,18 +90,18 @@ client.on('message', async msg => {
         {
             //#region about
             case "about":
-                request("https://dagg.xyz/randomfox/", { json: true } , (error, response, body) => {
-                    let aboutDate = new Date()
-                    let aboutEmbed = new Discord.RichEmbed()
-                    .setColor(randomcolour())
-                    .setThumbnail(body.link)
-                    .setTitle("GitHub")
-                    .setURL("https://github.com/dagg-1/foxbot-js")
-                    .setDescription("**Hello!**")
-                    .setAuthor("FoxBot", "https://cdn.discordapp.com/avatars/601967284394917900/f25955e890f89f1015762647f82ea555.webp")
-                    .setFooter(aboutDate.toUTCString())
-                    msg.channel.send(aboutEmbed)
-                })
+                animalimg = "fox"
+                result = await requestimg(animalimg)
+                let aboutDate = new Date()
+                let aboutEmbed = new Discord.RichEmbed()
+                .setColor(randomcolour())
+                .setThumbnail(result)
+                .setTitle("GitHub")
+                .setURL("https://github.com/dagg-1/foxbot-js")
+                .setDescription("**Hello!**")
+                .setAuthor("FoxBot", "https://cdn.discordapp.com/avatars/601967284394917900/f25955e890f89f1015762647f82ea555.webp")
+                .setFooter(aboutDate.toUTCString())
+                msg.channel.send(aboutEmbed)
                 break
             //#endregion
 
@@ -172,29 +173,29 @@ client.on('message', async msg => {
 
             //#region help
             case "help":
-                request("https://dagg.xyz/randomfox/", { json: true } , (error, response, body) => {
-                    let helpDate = new Date()
-                    let helpEmbed = new Discord.RichEmbed()
-                    .setColor(randomcolour())
-                    .addField(prefix + "help", "Displays this screen", true)
-                    .addField(prefix + "about", "About the bot", true)
-                    .addField(prefix + "ping", "Pong!", true)
-                    .addField(prefix + "time", "Tells the time", true)
-                    .addField(prefix + "fox", "Post a random fox", true)
-                    .addField(prefix + "cat", "Post a random cat", true)
-                    .addField(prefix + "dog", "Post a random dog", true)
-                    .addField(prefix + "wolf", "Post a random wolf", true)
-                    .addField(prefix + "play [Search/URL]", "Plays a song", true)
-                    .addField(prefix + "prefix [Prefix]", "Sets server prefix", true)
-                    .addField(prefix + "info [User Mention]", "Gathers basic info of a user", true)
-                    .addField(prefix + "kick [User Mention]", "Kicks a user from the guild", true)
-                    .addField(prefix + "ban [User Mention]", "Bans a user from the guild", true)
-                    .addField(prefix + "reset", "Resets the music bot in case of user or bot error", true)
-                    .setFooter(helpDate.toUTCString())
-                    .setAuthor("FoxBot", "https://cdn.discordapp.com/avatars/601967284394917900/f25955e890f89f1015762647f82ea555.webp")
-                    .setThumbnail(body.link)
-                    msg.channel.send(helpEmbed)
-                })
+                animalimg = "fox"
+                result = await requestimg(animalimg)
+                let helpDate = new Date()
+                let helpEmbed = new Discord.RichEmbed()
+                .setColor(randomcolour())
+                .addField(prefix + "help", "Displays this screen", true)
+                .addField(prefix + "about", "About the bot", true)
+                .addField(prefix + "ping", "Pong!", true)
+                .addField(prefix + "time", "Tells the time", true)
+                .addField(prefix + "fox", "Post a random fox", true)
+                .addField(prefix + "cat", "Post a random cat", true)
+                .addField(prefix + "dog", "Post a random dog", true)
+                .addField(prefix + "wolf", "Post a random wolf", true)
+                .addField(prefix + "play [Search/URL]", "Plays a song", true)
+                .addField(prefix + "prefix [Prefix]", "Sets server prefix", true)
+                .addField(prefix + "info [User Mention]", "Gathers basic info of a user", true)
+                .addField(prefix + "kick [User Mention]", "Kicks a user from the guild", true)
+                .addField(prefix + "ban [User Mention]", "Bans a user from the guild", true)
+                .addField(prefix + "reset", "Resets the music bot in case of user or bot error", true)
+                .setFooter(helpDate.toUTCString())
+                .setAuthor("FoxBot", "https://cdn.discordapp.com/avatars/601967284394917900/f25955e890f89f1015762647f82ea555.webp")
+                .setThumbnail(result)
+                msg.channel.send(helpEmbed)
                 break
             //#endregion
 
@@ -468,21 +469,21 @@ client.on('message', async msg => {
     }
 })
 
+async function requestimg(animalimg)
+{
+    const info = urls[animalimg];
+    return (await axios.get(info.url)).data[info.result];
+}
+
 async function sendimg(animalimg, msg) {
     let author = msg.author.id
     const imgfilter = (reaction, user) => 
         reaction.emoji.name === "➡" && user.id === msg.author.id 
         || reaction.emoji.name === "⏹" && user.id === msg.author.id
     postimg()
-
-    async function requestimg(animalimg)
-    {
-        const info = urls[animalimg];
-        return (await axios.get(info.url)).data[info.result];
-    }
     async function postimg()
     {
-        let result = await requestimg(animalimg)
+        result = await requestimg(animalimg)
         let date = new Date()
         let embed = new Discord.RichEmbed()      
         .setColor(randomcolour())
