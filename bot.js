@@ -177,20 +177,21 @@ client.on('message', async msg => {
                 let helpDate = new Date()
                 let helpEmbed = new Discord.RichEmbed()
                     .setColor(randomcolour())
-                    .addField(prefix + "help", "Displays this screen", true)
-                    .addField(prefix + "about", "About the bot", true)
-                    .addField(prefix + "ping", "Pong!", true)
-                    .addField(prefix + "time", "Tells the time", true)
-                    .addField(prefix + "fox", "Post a random fox", true)
-                    .addField(prefix + "cat", "Post a random cat", true)
-                    .addField(prefix + "dog", "Post a random dog", true)
-                    .addField(prefix + "wolf", "Post a random wolf", true)
-                    .addField(prefix + "play [Search/URL]", "Plays a song", true)
-                    .addField(prefix + "prefix [Prefix]", "Sets server prefix", true)
-                    .addField(prefix + "info [User Mention]", "Gathers basic info of a user", true)
-                    .addField(prefix + "kick [User Mention]", "Kicks a user from the guild", true)
-                    .addField(prefix + "ban [User Mention]", "Bans a user from the guild", true)
-                    .addField(prefix + "reset", "Resets the music bot in case of user or bot error", true)
+                    .addField(`${prefix}help`, "Displays this screen", true)
+                    .addField(`${prefix}about`, "About the bot", true)
+                    .addField(`${prefix}ping`, "Pong!", true)
+                    .addField(`${prefix}time` + "time", "Tells the time", true)
+                    .addField(`${prefix}fox`, "Post a random fox", true)
+                    .addField(`${prefix}cat`, "Post a random cat", true)
+                    .addField(`${prefix}dog`, "Post a random dog", true)
+                    .addField(`${prefix}wolf`, "Post a random wolf", true)
+                    .addField(`${prefix}play [Search/URL]`, "Play a song", true)
+                    .addField(`${prefix}prefix [Prefix]`, "Set server prefix", true)
+                    .addField(`${prefix}info [User Mention]`, "Gather basic info of a user", true)
+                    .addField(`${prefix}kick [User Mention]`, "Kick a user from the guild", true)
+                    .addField(`${prefix}ban [User Mention]`, "Ban a user from the guild", true)
+                    .addField(`${prefix}reset`, "Reset the music bot in case of user or bot error", true)
+                    .addField(`${prefix}rng [Min] [Max] or [Max]`, "Post a random number",true)
                     .setFooter(helpDate.toUTCString())
                     .setAuthor("FoxBot", "https://cdn.discordapp.com/avatars/601967284394917900/f25955e890f89f1015762647f82ea555.webp")
                     .setThumbnail(result)
@@ -352,7 +353,7 @@ client.on('message', async msg => {
                     .setFooter(infoDate.toUTCString())
                 if (argument[0] == undefined) {
                     if (msg.member.colorRole == undefined) rolecolor = "#b5b5b5"
-                    else rolecolor = msg.member.colorRole.hexColor
+                    else rolecolor = msg.member.displayColor
                     infoEmbed.setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.avatarURL)
                         .setThumbnail(msg.author.avatarURL)
                         .setTitle(`User Id: ${msg.author.id}`)
@@ -366,7 +367,7 @@ client.on('message', async msg => {
                     var mentionedUser = msg.mentions.users.first()
                     var mentionedMember = msg.guild.member(mentionedUser)
                     if (mentionedMember.colorRole == undefined) rolecolor = "#b5b5b5"
-                    else rolecolor = mentionedMember.colorRole.hexColor
+                    else rolecolor = mentionedMember.displayColor
                     infoEmbed.setAuthor(`${mentionedUser.username}#${mentionedUser.discriminator}`, mentionedUser.avatarURL)
                         .setThumbnail(mentionedUser.avatarURL)
                         .setTitle(`User Id: ${mentionedUser.id}`)
@@ -461,6 +462,57 @@ client.on('message', async msg => {
             case "reset":
                 if (msg.member.hasPermission("MANAGE_MESSAGES")) { voiceActive = false }
                 else { msg.reply("You do not have the ability to manage messages.") }
+                break
+            //#endregion
+
+            //#region rng
+            case "rng":
+                if (argument[0] == undefined) return msg.channel.send(`Usage: ${prefix}rng [MAX] or ${prefix}rng [MIN] [MAX]`)
+                let rngEmbed = new Discord.RichEmbed()
+                let rngTime = new Date().toUTCString()
+                rngEmbed.setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.avatarURL)
+                    .setTitle("Random Number Generator")
+                    .setColor(randomcolour())
+                    .setFooter(rngTime)
+                let rngarg
+                switch (argument.length) {
+                    case 1:
+                        rngEmbed.setDescription(Math.floor(Math.random() * argument[0]) + 1)
+                        rngarg = 1
+                        break
+                    case 2:
+                        rngEmbed.setDescription(Math.floor(Math.random() * (Math.floor(argument[1]) - Math.ceil(argument[0])) + Math.ceil(argument[0])))
+                        rngarg = 2
+                        break
+                    default:
+                        msg.reply("Please use only two arguments!")
+                        return
+                }
+                msg.channel.send(rngEmbed)
+                    .then(async msg => {
+                        msg.createReactionCollector(filter, { time: null })
+                            .on('collect', async reaction => {
+                                switch (reaction.emoji.name) {
+                                    case "➡":
+                                        switch (rngarg) {
+                                            case 1:
+                                                rngEmbed.setDescription(Math.floor(Math.random() * argument[0]) + 1)
+                                                break
+                                            case 2:
+                                                rngEmbed.setDescription(Math.floor(Math.random() * (Math.floor(argument[1]) - Math.ceil(argument[0])) + Math.ceil(argument[0])))
+                                                break
+                                        }
+                                        reaction.remove(author)
+                                        msg.edit(rngEmbed)
+                                        break
+                                    case "⏹":
+                                        msg.delete()
+                                        break
+                                }
+                            })
+                        await msg.react("➡")
+                        await msg.react("⏹")
+                    })
                 break
             //#endregion
         }
