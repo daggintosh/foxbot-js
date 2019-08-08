@@ -211,6 +211,7 @@ client.on('message', async msg => {
                     else if(argument[0].includes("youtube.com/watch?v=") || argument[0].includes("https://youtu.be/")){
                         let voiceChannel = msg.member.voiceChannel
                         let follow = setInterval(z => {
+                            if(msg.member.voiceChannel == undefined) clearInterval(follow)
                             if(msg.member.voiceChannel.joinable == false) clearInterval(follow), msg.reply("I can't join this channel, I will no longer follow you.")
                             if(voiceChannel != msg.member.voiceChannel && msg.member.voiceChannel.joinable == true) {
                                 voiceChannel = msg.member.voiceChannel
