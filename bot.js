@@ -535,11 +535,18 @@ async function sendimg(animalimg, msg) {
         result = await requestimg(animalimg)
         let date = new Date()
         let embed = new Discord.RichEmbed()
-            .setColor(randomcolour())
             .setTitle(phrases[Math.floor(Math.random() * phrases.length)].replace(animal, animalimg))
             .setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.avatarURL)
             .setImage(result)
             .setFooter(date.toUTCString())
+        switch(animalimg) {
+            case "fox":
+                embed.setColor("#fc9403")
+                break
+            default:
+                embed.setColor(randomcolour())
+                break
+        }
         msg.channel.send(embed)
             .then(async msg => {
                 msg.createReactionCollector(imgfilter, { time: null })
