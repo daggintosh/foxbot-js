@@ -543,6 +543,9 @@ async function sendimg(animalimg, msg) {
             case "fox":
                 embed.setColor("#fc9403")
                 break
+            case "dog":
+                embed.setColor("#ffe419")
+                break
             default:
                 embed.setColor(randomcolour())
                 break
