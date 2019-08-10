@@ -96,7 +96,7 @@ client.on('message', async msg => {
                 result = await requestimg(animalimg)
                 let aboutDate = new Date()
                 let aboutEmbed = new Discord.RichEmbed()
-                    .setColor(randomcolour())
+                    .setColor("#fc9403")
                     .setThumbnail(result)
                     .setTitle("GitHub")
                     .setURL("https://github.com/dagg-1/foxbot-js")
@@ -107,28 +107,22 @@ client.on('message', async msg => {
                 break
             //#endregion
 
-            //#region fox
+            //#region fox - cat - wolf - dog
             case "fox":
                 animalimg = "fox"
                 sendimg(animalimg, msg)
                 break
-            //#endregion
 
-            //#region cat
             case "cat":
                 animalimg = "cat"
                 sendimg(animalimg, msg)
                 break
-            //#endregion
 
-            //#region wolf
             case "wolf":
                 animalimg = "wolf"
                 sendimg(animalimg, msg)
                 break
-            //#endregion
 
-            //#region dog
             case "dog":
                 animalimg = "dog"
                 sendimg(animalimg, msg)
@@ -176,7 +170,7 @@ client.on('message', async msg => {
                 result = await requestimg(animalimg)
                 let helpDate = new Date()
                 let helpEmbed = new Discord.RichEmbed()
-                    .setColor(randomcolour())
+                    .setColor("#fc9403")
                     .addField(`${prefix}help`, "Displays this screen", true)
                     .addField(`${prefix}about`, "About the bot", true)
                     .addField(`${prefix}ping`, "Pong!", true)
@@ -546,8 +540,11 @@ async function sendimg(animalimg, msg) {
             case "dog":
                 embed.setColor("#ffe419")
                 break
-            default:
-                embed.setColor(randomcolour())
+            case "wolf":
+                embed.setColor("#b5b5b5")
+                break
+            case "cat":
+                embed.setColor("#2b2b2b")
                 break
         }
         msg.channel.send(embed)
