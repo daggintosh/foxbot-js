@@ -43,6 +43,7 @@ let result
 let defaultPrefix = prefconf.defaultPrefix
 
 let voiceActive = {}
+let queue = new Map()
 
 client.login(token.token)
 
@@ -51,6 +52,7 @@ client.on('ready', async () => {
     client.user.setActivity("foxes in " + client.guilds.size + " guilds", { type: 'LISTENING' })
     client.guilds.tap(async guild => {
         voiceActive[guild.id] = false
+        queue.set(guild.id, "")
         var guildexists = await store.get(guild.id)
         if (guildexists == undefined) {
             await store.set(guild.id, defaultPrefix)
@@ -61,6 +63,7 @@ client.on('ready', async () => {
 client.on('guildCreate', async guild => {
     client.user.setActivity("foxes in " + client.guilds.size + " guilds", { type: 'LISTENING' })
     console.log("The bot has joined " + guild.name)
+    queue.set(guild.id, "")
     voiceActive[guild.id] = false
     await store.set(guild.id, defaultPrefix)
 })
@@ -68,6 +71,7 @@ client.on('guildCreate', async guild => {
 client.on('guildDelete', async guild => {
     client.user.setActivity("foxes in " + client.guilds.size + " guilds", { type: 'LISTENING' })
     console.log("The bot has left " + guild.name)
+    queue.set(guild.id, "")
     await store.delete(guild.id)
 })
 
@@ -455,8 +459,8 @@ function music(argument, msg, volume, repeat, author) {
     else if (argument[0].includes("youtube.com/watch?v=") || argument[0].includes("https://youtu.be/")) {
         let voiceChannel = msg.member.voiceChannel
         let follow = setInterval(z => {
-            if (msg.member.voiceChannel == undefined) clearInterval(follow)
-            else if (msg.member.voiceChannel.joinable == false) clearInterval(follow), msg.reply("I can't join this channel, I will no longer follow you.")
+            if (msg.member.voiceChannel == undefined) return clearInterval(follow)
+            if (msg.member.voiceChannel.joinable == false) clearInterval(follow), msg.reply("I can't join this channel, I will no longer follow you.")
             if (voiceChannel != msg.member.voiceChannel && msg.member.voiceChannel.joinable == true) {
                 voiceChannel = msg.member.voiceChannel
                 voiceChannel.join()
