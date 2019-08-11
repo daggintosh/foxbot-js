@@ -43,7 +43,6 @@ let result
 let defaultPrefix = prefconf.defaultPrefix
 
 let voiceActive = {}
-let queue = new Map()
 
 client.login(token.token)
 
@@ -52,7 +51,6 @@ client.on('ready', async () => {
     client.user.setActivity("foxes in " + client.guilds.size + " guilds", { type: 'LISTENING' })
     client.guilds.tap(async guild => {
         voiceActive[guild.id] = false
-        queue.set(guild.id, "")
         var guildexists = await store.get(guild.id)
         if (guildexists == undefined) {
             await store.set(guild.id, defaultPrefix)
