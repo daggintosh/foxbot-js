@@ -75,13 +75,6 @@ client.on('disconnect', () => console.error("The bot has lost connection to the 
 
 client.on('message', async msg => {
     if (msg.author.bot) return
-    const filter = (reaction, user) =>
-        [reaction.emoji.name === "⏹",
-        reaction.emoji.name === "🔁",
-        reaction.emoji.name === "⏯",
-        reaction.emoji.name === "⬆",
-        reaction.emoji.name === "⬇"]
-        && user.id === msg.author.id
     if (msg.guild) {
         var prefix = await store.get(msg.member.guild.id)
         if (msg.content.indexOf(prefix) !== 0) return
@@ -197,128 +190,7 @@ client.on('message', async msg => {
             case "play":
                 let repeat = "OFF"
                 let volume = 0.5
-                play()
-                function play() {
-                    if (argument[0] == undefined) { msg.reply("Do you want me to just scream?") }
-                    else if (voiceActive[msg.member.guild.id] == true) { msg.reply("I'm already playing something!") }
-                    else if (msg.member.voiceChannel == undefined) { msg.reply("You aren't in a voice channel!") }
-                    else if (msg.member.voiceChannel.joinable == false) { msg.reply("I cannot join this channel!") }
-                    else if (argument[0].includes("youtube.com/watch?v=") || argument[0].includes("https://youtu.be/")) {
-                        let voiceChannel = msg.member.voiceChannel
-                        let follow = setInterval(z => {
-                            if (msg.member.voiceChannel == undefined) clearInterval(follow)
-                            else if (msg.member.voiceChannel.joinable == false) clearInterval(follow), msg.reply("I can't join this channel, I will no longer follow you.")
-                            if (voiceChannel != msg.member.voiceChannel && msg.member.voiceChannel.joinable == true) {
-                                voiceChannel = msg.member.voiceChannel
-                                voiceChannel.join()
-                            }
-                        }, 1000)
-                        let url = argument[0]
-                        let video = youtube(url, { highWaterMark: 1 << 25 })
-                        youtube.getInfo(url, (error, info) => {
-                            let playPauseToggler = "PLAYING"
-                            voiceChannel.join()
-                                .then(connection => {
-                                    voiceActive[msg.member.guild.id] = true
-                                    let dispatch = connection.playStream(video)
-                                    dispatch.setVolume(volume)
-                                    let ytEmbed = new Discord.RichEmbed()
-                                        .setAuthor(info.author.name, info.author.avatar)
-                                        .setFooter(`👁 ${info.player_response.videoDetails.viewCount.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} views`)
-                                        .addField("🎵 Now Playing", info.player_response.videoDetails.title)
-                                        .addField("🔈 Volume", dispatch.volume, true)
-                                        .addField("🔁 Repeat", repeat, true)
-                                        .addField("ℹ Status", playPauseToggler, true)
-                                        .setImage(info.player_response.videoDetails.thumbnail.thumbnails[3].url)
-                                        .setTitle(info.video_url)
-                                        .setURL(info.video_url)
-                                        .setColor("#ff1100")
-                                    msg.channel.send(ytEmbed)
-                                        .then(async msg => {
-                                            dispatch.on('end', z => {
-                                                if (repeat === "ON") {
-                                                    voiceActive[msg.member.guild.id] = false,
-                                                        msg.delete(),
-                                                        play()
-                                                }
-                                                else {
-                                                    voiceActive[msg.member.guild.id] = false,
-                                                        clearInterval(follow),
-                                                        msg.delete(),
-                                                        voiceChannel.leave(),
-                                                        connection.dispatcher.end()
-                                                }
-                                            })
-                                            msg.createReactionCollector(filter, { time: null })
-                                                .on('collect', reaction => {
-                                                    switch (reaction.emoji.name) {
-                                                        case "⏹":
-                                                            repeat = "OFF"
-                                                            voiceChannel.leave()
-                                                            break
-                                                        case "🔁":
-                                                            reaction.remove(author)
-                                                            if (repeat === "OFF") {
-                                                                repeat = "ON"
-                                                                ytEmbed.fields[2] = { name: "🔁 Repeat", value: repeat, inline: true }
-                                                                msg.edit(ytEmbed)
-                                                            }
-                                                            else {
-                                                                repeat = "OFF"
-                                                                ytEmbed.fields[2] = { name: "🔁 Repeat", value: repeat, inline: true }
-                                                                msg.edit(ytEmbed)
-                                                            }
-                                                            break
-                                                        case "⏯":
-                                                            reaction.remove(author)
-                                                            if (playPauseToggler === "PLAYING") {
-                                                                playPauseToggler = "PAUSED"
-                                                                ytEmbed.fields[3] = { name: "ℹ Status", value: playPauseToggler, inline: true }
-                                                                msg.edit(ytEmbed)
-                                                                dispatch.pause()
-                                                            }
-                                                            else {
-                                                                playPauseToggler = "PLAYING"
-                                                                ytEmbed.fields[3] = { name: "ℹ Status", value: playPauseToggler, inline: true }
-                                                                msg.edit(ytEmbed)
-                                                                dispatch.resume()
-                                                            }
-                                                            break
-                                                        case "⬆":
-                                                            reaction.remove(author)
-                                                            volume = (volume * 10 + 0.1 * 10) / 10
-                                                            dispatch.setVolume(volume)
-                                                            ytEmbed.fields[1] = { name: "🔈 Volume", value: volume.toString(), inline: true }
-                                                            msg.edit(ytEmbed)
-                                                            break
-                                                        case "⬇":
-                                                            reaction.remove(author)
-                                                            volume = (volume * 10 - 0.1 * 10) / 10
-                                                            dispatch.setVolume(volume)
-                                                            ytEmbed.fields[1] = { name: "🔈 Volume", value: volume.toString(), inline: true }
-                                                            msg.edit(ytEmbed)
-                                                            break
-                                                    }
-                                                })
-                                            await msg.react("⏯")
-                                            await msg.react("⏹")
-                                            await msg.react("🔁")
-                                            await msg.react("⬆")
-                                            await msg.react("⬇")
-                                        })
-                                })
-                        })
-                    }
-                    else {
-                        let searchTerm = JSON.stringify(argument)
-                        let filteredTerm = searchTerm.replace(/"|,|]|\[/gi, " ").replace(/\s+/g, " ").trim()
-                        ytsearch(apitoken, { q: `${filteredTerm}`, part: "snippet", type: "video,playlist" }, (error, result) => {
-                            if (result == undefined) { msg.reply("I've got nothing!"); return }
-                            argument[0] = `https://youtu.be/${result.items[0].id.videoId}`
-                            play()
-                        })
-                    }
-                }
+                music(argument, msg, volume, repeat, author)
                 break
             //#endregion
 
@@ -533,7 +405,7 @@ async function sendimg(animalimg, msg) {
             .setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.avatarURL)
             .setImage(result)
             .setFooter(date.toUTCString())
-        switch(animalimg) {
+        switch (animalimg) {
             case "fox":
                 embed.setColor("#fc9403")
                 break
@@ -566,5 +438,133 @@ async function sendimg(animalimg, msg) {
                 await msg.react("➡")
                 await msg.react("⏹")
             })
+    }
+}
+
+function music(argument, msg, volume, repeat, author) {
+    const ytFilter = (reaction, user) =>
+    [reaction.emoji.name === "⏹",
+    reaction.emoji.name === "🔁",
+    reaction.emoji.name === "⏯",
+    reaction.emoji.name === "⬆",
+    reaction.emoji.name === "⬇"] && user.id === msg.author.id
+    if (argument[0] == undefined) { msg.reply("Do you want me to just scream?") }
+    else if (voiceActive[msg.member.guild.id] == true) { msg.reply("I'm already playing something!") }
+    else if (msg.member.voiceChannel == undefined) { msg.reply("You aren't in a voice channel!") }
+    else if (msg.member.voiceChannel.joinable == false) { msg.reply("I cannot join this channel!") }
+    else if (argument[0].includes("youtube.com/watch?v=") || argument[0].includes("https://youtu.be/")) {
+        let voiceChannel = msg.member.voiceChannel
+        let follow = setInterval(z => {
+            if (msg.member.voiceChannel == undefined) clearInterval(follow)
+            else if (msg.member.voiceChannel.joinable == false) clearInterval(follow), msg.reply("I can't join this channel, I will no longer follow you.")
+            if (voiceChannel != msg.member.voiceChannel && msg.member.voiceChannel.joinable == true) {
+                voiceChannel = msg.member.voiceChannel
+                voiceChannel.join()
+            }
+        }, 1000)
+        let url = argument[0]
+        let video = youtube(url, { highWaterMark: 1 << 25 })
+        youtube.getInfo(url, (error, info) => {
+            let playPauseToggler = "PLAYING"
+            voiceChannel.join()
+                .then(connection => {
+                    voiceActive[msg.member.guild.id] = true
+                    let dispatch = connection.playStream(video)
+                    dispatch.setVolume(volume)
+                    let ytEmbed = new Discord.RichEmbed()
+                        .setAuthor(info.author.name, info.author.avatar)
+                        .setFooter(`👁 ${info.player_response.videoDetails.viewCount.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} views`)
+                        .addField("🎵 Now Playing", info.player_response.videoDetails.title)
+                        .addField("🔈 Volume", dispatch.volume, true)
+                        .addField("🔁 Repeat", repeat, true)
+                        .addField("ℹ Status", playPauseToggler, true)
+                        .setImage(info.player_response.videoDetails.thumbnail.thumbnails[3].url)
+                        .setTitle(info.video_url)
+                        .setURL(info.video_url)
+                        .setColor("#ff1100")
+                    msg.channel.send(ytEmbed)
+                        .then(async msg => {
+                            dispatch.on('end', z => {
+                                if (repeat === "ON") {
+                                    voiceActive[msg.member.guild.id] = false,
+                                        msg.delete(),
+                                        play()
+                                }
+                                else {
+                                    voiceActive[msg.member.guild.id] = false,
+                                        clearInterval(follow),
+                                        msg.delete(),
+                                        voiceChannel.leave(),
+                                        connection.dispatcher.end()
+                                }
+                            })
+                            msg.createReactionCollector(ytFilter, { time: null })
+                                .on('collect', reaction => {
+                                    switch (reaction.emoji.name) {
+                                        case "⏹":
+                                            repeat = "OFF"
+                                            voiceChannel.leave()
+                                            break
+                                        case "🔁":
+                                            reaction.remove(author)
+                                            if (repeat === "OFF") {
+                                                repeat = "ON"
+                                                ytEmbed.fields[2] = { name: "🔁 Repeat", value: repeat, inline: true }
+                                                msg.edit(ytEmbed)
+                                            }
+                                            else {
+                                                repeat = "OFF"
+                                                ytEmbed.fields[2] = { name: "🔁 Repeat", value: repeat, inline: true }
+                                                msg.edit(ytEmbed)
+                                            }
+                                            break
+                                        case "⏯":
+                                            reaction.remove(author)
+                                            if (playPauseToggler === "PLAYING") {
+                                                playPauseToggler = "PAUSED"
+                                                ytEmbed.fields[3] = { name: "ℹ Status", value: playPauseToggler, inline: true }
+                                                msg.edit(ytEmbed)
+                                                dispatch.pause()
+                                            }
+                                            else {
+                                                playPauseToggler = "PLAYING"
+                                                ytEmbed.fields[3] = { name: "ℹ Status", value: playPauseToggler, inline: true }
+                                                msg.edit(ytEmbed)
+                                                dispatch.resume()
+                                            }
+                                            break
+                                        case "⬆":
+                                            reaction.remove(author)
+                                            volume = (volume * 10 + 0.1 * 10) / 10
+                                            dispatch.setVolume(volume)
+                                            ytEmbed.fields[1] = { name: "🔈 Volume", value: volume.toString(), inline: true }
+                                            msg.edit(ytEmbed)
+                                            break
+                                        case "⬇":
+                                            reaction.remove(author)
+                                            volume = (volume * 10 - 0.1 * 10) / 10
+                                            dispatch.setVolume(volume)
+                                            ytEmbed.fields[1] = { name: "🔈 Volume", value: volume.toString(), inline: true }
+                                            msg.edit(ytEmbed)
+                                            break
+                                    }
+                                })
+                            await msg.react("⏯")
+                            await msg.react("⏹")
+                            await msg.react("🔁")
+                            await msg.react("⬆")
+                            await msg.react("⬇")
+                        })
+                })
+        })
+    }
+    else {
+        let searchTerm = JSON.stringify(argument)
+        let filteredTerm = searchTerm.replace(/"|,|]|\[/gi, " ").replace(/\s+/g, " ").trim()
+        ytsearch(apitoken, { q: `${filteredTerm}`, part: "snippet", type: "video,playlist" }, (error, result) => {
+            if (result == undefined) { msg.reply("I've got nothing!"); return }
+            argument[0] = `https://youtu.be/${result.items[0].id.videoId}`
+            music(argument, msg, volume, repeat, author)
+        })
     }
 }
