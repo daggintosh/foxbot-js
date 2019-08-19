@@ -82,6 +82,7 @@ client.on('message', async msg => {
         const argument = msg.content.slice(prefix.length).trim().split(/ +/g)
         const command = argument.shift().toLowerCase()
         let author = msg.author.id
+        const filter = (reaction, user) => [reaction.emoji.name === "➡", reaction.emoji.name === "⏹"] && user.id === msg.author.id
         switch (command) {
             //#region about
             case "about":
